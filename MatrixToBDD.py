@@ -7,6 +7,7 @@ class SymbolicModel:
     def __init__(self, num_states: int, valuations, valuation_names, programs, program_names):
         
         self.num_states = num_states
+
         self.bdd = _bdd.BDD()
         self.bdd.configure(reordering=True)
 
@@ -19,15 +20,23 @@ class SymbolicModel:
         for valuation, name in zip(valuations, valuation_names):
             self.add_valuation(valuation, name)
 
+        # after adding all propositions to the states, add more propositions to make the
+        # states unique
         self.make_states_unique()
+
+        # using the explicit unique states to create the law
+        self.theta = self.add_law()
         
+        # create a primed versions of all proposistions in the model to use in the programs
         self.primed_name_map = {var: var + "'" for var in self.bdd.vars}
         for v in self.primed_name_map.values():
             self.bdd.declare(v)
         
-
         for program, name in zip(programs, program_names):
             self.add_program(program, name)
+
+        # after adding law and the programs the explicit states are not necessary anymore
+        del self.states
 
     def create_new_prop(self, name=None):
         if name:
@@ -44,41 +53,6 @@ class SymbolicModel:
                 for j in range(len(self.states)):
                     if self.states[i] == self.states[j] and i != j:
                         print(f"{i} is equal to {j}")
-
-    def add_valuation(self, valuations: list, name=None):
-        if len(valuations) != self.num_states:
-            raise ValueError('Different number of valuations than states')
-        
-        new_prop = self.create_new_prop(name)
-        # per state add the corresponding valuation of a single proposition
-        for i, valuation in enumerate(valuations):
-            if valuation == 1:
-                self.states[i] &= new_prop
-            elif valuation == 0:
-                self.states[i] &= ~new_prop
-        
-
-    def add_program(self, program, program_name):
-        if len(program[0]) != self.num_states:
-            raise ValueError('Different number of states in program than known')
-        
-        if program_name in self.programs.keys():
-            raise ValueError(f"The program name '{program_name}' is used at least twice, while program names should be unique")
-        
-        # find the source and target state couples as indices
-        base_state_indices, target_state_indices = np.where(program == 1)
-        
-        program_bdd = self.bdd.false
-        
-        for base_state_index, target_state_index in zip(base_state_indices, target_state_indices):
-            base_state = self.states[base_state_index]
-            target_state_primed = self.bdd.let(self.primed_name_map, self.states[target_state_index])
-
-            transition = base_state & target_state_primed
-            program_bdd = program_bdd | transition
-
-        # merge all seperate relation formulas in one final formula string
-        self.programs[program_name] = program_bdd
 
     def unique_duplicate_index(self):
         seen_once = set()
@@ -105,10 +79,48 @@ class SymbolicModel:
             for index, state in enumerate(self.states):
                 if index in duplicate_indices:
                     self.states[index] &= new_prop
-                else:
-                    self.states[index] &= ~new_prop
       
             duplicate_indices = self.unique_duplicate_index()
+
+    def add_valuation(self, valuations: list, name=None):
+        if len(valuations) != self.num_states:
+            raise ValueError('Different number of valuations than states')
+        
+        new_prop = self.create_new_prop(name)
+        # per state add the corresponding valuation of a single proposition
+        for i, valuation in enumerate(valuations):
+            if valuation == 1:
+                self.states[i] &= new_prop
+            elif valuation == 0:
+                self.states[i] &= ~new_prop    
+
+    def add_law(self):
+        result = self.bdd.false
+        for state in self.states:
+            result = self.theta | state
+        return result
+        
+    def add_program(self, program, program_name):
+        if len(program[0]) != self.num_states:
+            raise ValueError('Different number of states in program than known')
+        
+        if program_name in self.programs.keys():
+            raise ValueError(f"The program name '{program_name}' is used at least twice, while program names should be unique")
+        
+        # find the source and target state couples as indices
+        base_state_indices, target_state_indices = np.where(program == 1)
+        
+        program_bdd = self.bdd.false
+        
+        for base_state_index, target_state_index in zip(base_state_indices, target_state_indices):
+            base_state = self.states[base_state_index]
+            target_state_primed = self.bdd.let(self.primed_name_map, self.states[target_state_index])
+
+            transition = base_state & target_state_primed
+            program_bdd = program_bdd | transition
+
+        # merge all seperate relation formulas in one final formula string
+        self.programs[program_name] = program_bdd
 
     def __str__(self):
 
