@@ -1,0 +1,15 @@
+STATES
+2
+
+PROPS
+p
+1 0
+
+PROGS
+a
+0 1
+0 0
+
+b
+0 0
+1 0
