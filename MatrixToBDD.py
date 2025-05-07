@@ -4,7 +4,7 @@ import dd.autoref as _bdd
 
 class SymbolicModel:
 
-    def __init__(self, num_states: int, valuations, programs, program_names):
+    def __init__(self, num_states: int, valuations, valuation_names, programs, program_names):
         
         self.num_states = num_states
         self.bdd = _bdd.BDD()
@@ -16,21 +16,25 @@ class SymbolicModel:
         self.programs = {}
         
 
-        for v in valuations:
-            self.add_valuation(v)
+        for valuation, name in zip(valuations, valuation_names):
+            self.add_valuation(valuation, name)
 
         self.make_states_unique()
         
-        self.primed_name_map = {f'x{i}': f'x{i}p' for i in range(self.current_prop_number)}
+        self.primed_name_map = {var: var + "'" for var in self.bdd.vars}
         for v in self.primed_name_map.values():
             self.bdd.declare(v)
         
 
-        for prog, name in zip(programs, program_names):
-            self.add_program(prog, name)
+        for program, name in zip(programs, program_names):
+            self.add_program(program, name)
 
-    def create_new_prop(self):
-        current_prop_name = f'x{self.current_prop_number}'
+    def create_new_prop(self, name=None):
+        if name:
+            current_prop_name = name
+        else:
+            current_prop_name = f'x{self.current_prop_number}'
+
         self.bdd.declare(current_prop_name)
         self.current_prop_number += 1
         return self.bdd.var(current_prop_name)
@@ -41,17 +45,18 @@ class SymbolicModel:
                     if self.states[i] == self.states[j] and i != j:
                         print(f"{i} is equal to {j}")
 
-    def add_valuation(self, valuations: list):
+    def add_valuation(self, valuations: list, name=None):
         if len(valuations) != self.num_states:
             raise ValueError('Different number of valuations than states')
         
-        new_prop = self.create_new_prop()
+        new_prop = self.create_new_prop(name)
         # per state add the corresponding valuation of a single proposition
         for i, valuation in enumerate(valuations):
             if valuation == 1:
                 self.states[i] &= new_prop
             elif valuation == 0:
                 self.states[i] &= ~new_prop
+        
 
     def add_program(self, program, program_name):
         if len(program[0]) != self.num_states:
@@ -125,6 +130,7 @@ def SymbolicModelFromFile(file: str):
     mode = None
     num_states = 0
     valuations = []
+    valuation_names = []
     programs = []
     program_names = []
     
@@ -142,6 +148,7 @@ def SymbolicModelFromFile(file: str):
                 line = f.readline()
             elif mode == 'PROPS':
                 if len(line.split()) == 1:
+                    valuation_names.append(line.strip())
                     line = f.readline()
                     valuations.append([int(x) for x in line.split()])
                 line = f.readline()
@@ -161,7 +168,7 @@ def SymbolicModelFromFile(file: str):
             else:
                 line = f.readline()
 
-    return SymbolicModel(num_states, valuations, programs, program_names)
+    return SymbolicModel(num_states, valuations, valuation_names, programs, program_names)
 
 test = SymbolicModelFromFile('small_kripke.txt')
 print(test)
