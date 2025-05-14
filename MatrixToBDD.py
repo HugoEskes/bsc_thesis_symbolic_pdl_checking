@@ -6,6 +6,7 @@ class PDLTransformer(Transformer):
     def __init__(self, model):
         self.model = model
         self.bdd = model.bdd
+        self.identity = self.find_identity()
         
 
     def formula(self, items):
@@ -27,8 +28,8 @@ class PDLTransformer(Transformer):
     def not_(self, items):
         return ~items[1]
     
-    def test(self, items): # TODO
-        return items[0]
+    def test(self, items):
+        return self.identity & items[1]
 
     def and_(self, items):
         return items[0] & items[2]
@@ -40,7 +41,7 @@ class PDLTransformer(Transformer):
         return ~items[0] | items[2]
 
     def equiv(self, items):
-        return ~(items[0] & items[2])
+        return ~(items[0] ^ items[2])
 
     def diamond(self, items):
         prog = items[0]
@@ -69,8 +70,14 @@ class PDLTransformer(Transformer):
     def choice(self, items):
         return items[0] | items[2]
 
-    def star(self, items): # TODO
-        return None
+    def star(self, items):
+        prog = items[0]
+        old_result = self.identity
+        new_result = self.identity | self.compose(old_result, prog)
+        while old_result != new_result:
+            old_result = new_result
+            new_result = self.identity | self.compose(old_result, prog)
+        return new_result
 
     def parens(self, items):
         return items[1]
@@ -87,6 +94,13 @@ class PDLTransformer(Transformer):
         temporary_variables = ([s for s in self.bdd.support(compose) if s.endswith("T")])
 
         return self.bdd.exist(temporary_variables, compose)
+    
+    def find_identity(self):
+        identity = self.bdd.true
+        for proposition in self.bdd.support(self.model.law):
+            identity &= ~(self.bdd.var(proposition) ^ self.model.add_primes(self.bdd.var(proposition))) 
+        return identity
+
 
 class SymbolicModel:
     def __init__(self, num_states: int, valuations: list[list[int]], valuation_names: list[str],
@@ -148,8 +162,6 @@ class SymbolicModel:
 
     ?modal: "[" program "]" formula                                     -> box
                 | "<" program ">" formula                               -> diamond
-
-
 
     ?program: sequence
 
