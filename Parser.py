@@ -1,20 +1,24 @@
 from lark import Transformer, Lark
-import SymbolicModel
+import dd.autoref as _bdd
+from SymbolicModel import SymbolicModel, BDD
+from typing import Union
+
+FormulaItems = list[Union[str, BDD]]
 
 
 class PDLTransformer(Transformer):
-    def __init__(self, model):
+    def __init__(self, model: SymbolicModel):
         self.model = model
         self.identity = self.find_identity()
         self.parser = Lark(self.grammar,
                             parser='earley',
                             lexer='basic')
         
-    def expression_transformer(self, test):
+    def evaluate_expression(self, test: str) -> BDD:
         self.tree = self.parser.parse(test)
         return self.transform(self.tree)
     
-    grammar = """
+    grammar =  """ 
             ?start: formula
 
             ?formula: biconditional
@@ -52,7 +56,7 @@ class PDLTransformer(Transformer):
 
             ?test: TEST formula                                                 -> test
 
-            ?program_atom: SYMBOL                                              -> program_symbol
+            ?program_atom: SYMBOL                                               -> program_symbol
                         | test
                         | LPAR program RPAR                                     -> parens_prog
             %ignore " "
@@ -75,41 +79,41 @@ class PDLTransformer(Transformer):
             SYMBOL: /[a-zA-Z_][a-zA-Z0-9_]*/
             """
 
-    def formula(self, items):
+    def formula(self, items: FormulaItems) -> BDD:
         name = str(items[0])
         return self.model.bdd.var(name)
     
-    def formula_symbol(self, items):
+    def formula_symbol(self, items: FormulaItems) -> BDD:
         name = str(items[0])
         if name not in self.model.bdd.vars:
             raise ValueError(f"Expected formula symbol, got unknown: {name}")
         return self.model.bdd.var(name)
 
-    def program_symbol(self, items):
+    def program_symbol(self, items: FormulaItems) -> BDD:
         name = str(items[0])
         if name not in self.model.programs.keys():
             raise ValueError(f"Expected program symbol, got unknown: {name}")
         return self.model.programs[name]
 
-    def not_(self, items):
+    def not_(self, items: FormulaItems) -> BDD:
         return ~items[1]
     
-    def test(self, items):
+    def test(self, items: FormulaItems) -> BDD:
         return self.identity & items[1]
 
-    def and_(self, items):
+    def and_(self, items: FormulaItems) -> BDD:
         return items[0] & items[2]
 
-    def or_(self, items):
+    def or_(self, items: FormulaItems) -> BDD:
         return items[0] | items[2]
 
-    def implies(self, items):
+    def implies(self, items: FormulaItems) -> BDD:
         return ~items[0] | items[2]
 
-    def equiv(self, items):
+    def equiv(self, items: FormulaItems) -> BDD:
         return self.model.bdd.apply('xor', items[0], items[2])
 
-    def diamond(self, items):
+    def diamond(self, items: FormulaItems) -> BDD:
         prog = items[0]
         formula = items[1]
 
@@ -117,7 +121,7 @@ class PDLTransformer(Transformer):
 
         return self.model.bdd.exist(primed_variables, prog & self.model.add_primes(self.model.law) & self.model.add_primes(formula))
 
-    def box(self, items):
+    def box(self, items: FormulaItems) -> BDD:
         prog = items[0]
         formula = items[1]
 
@@ -125,18 +129,14 @@ class PDLTransformer(Transformer):
         
         return self.model.bdd.forall(primed_variables, (prog & self.model.add_primes(self.model.law)).implies(self.model.add_primes(formula)))
 
-    def prog(self, items):
-        name = str(items[0])
-        return self.model.programs[name]
-
-    def seq(self, items):
+    def seq(self, items: FormulaItems) -> BDD:
         item_a, item_b = items[0], items[2]
         return self.compose(item_a, item_b)
 
-    def choice(self, items):
+    def choice(self, items: FormulaItems) -> BDD:
         return items[0] | items[2]
 
-    def star(self, items):
+    def star(self, items: FormulaItems) -> BDD:
         prog = items[0]
         old_result = self.identity
         new_result = self.identity | self.compose(old_result, prog)
@@ -145,15 +145,15 @@ class PDLTransformer(Transformer):
             new_result = self.identity | self.compose(old_result, prog)
         return new_result
 
-    def parens(self, items):
+    def parens(self, items: FormulaItems) -> BDD:
         return items[1]
 
-    def parens_prog(self, items):
+    def parens_prog(self, items: FormulaItems) -> BDD:
         return items[1]
 
-    def compose(self, first, second):
-        first_with_temp = self.model.add_temporary(first, for_primed=True)
-        second_with_temp = self.model.add_temporary(second, for_primed=False)
+    def compose(self, first: BDD, second: BDD) -> BDD:
+        first_with_temp = self.model.add_temporary(first, is_primed=True)
+        second_with_temp = self.model.add_temporary(second, is_primed=False)
 
         compose = first_with_temp & second_with_temp
         
@@ -161,7 +161,7 @@ class PDLTransformer(Transformer):
 
         return self.model.bdd.exist(temporary_variables, compose)
     
-    def find_identity(self):
+    def find_identity(self) -> BDD:
         identity = self.model.bdd.true
         for proposition in self.model.bdd.support(self.model.law):
             p = self.model.bdd.var(proposition)

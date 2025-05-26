@@ -1,10 +1,11 @@
 from TextToModel import SymbolicModelFromFile
 from typing import Union
 
-def check_test(model_file_name: str, test: str, state_valuation: str=None) -> Union[bool, str]:
-    model = SymbolicModelFromFile(model_file_name)
-    return model.check(test, state_valuation)
+def check_test(model_file_name: str, tests: list[str], state_valuation: str=None) -> Union[bool, str]:
+    with SymbolicModelFromFile(model_file_name) as model:
+        for test in tests:
+            print(model.check(test, state_valuation))
 
-print(type(check_test('small_kripke.txt', '[a]q')))
+tests = ['<a;b*>(p&!q)', '[a;b*](p&!q)', '[a*]p']
 
-print(check_test('small_kripke.txt', '[a]q'))
+check_test('test.txt', tests)

@@ -3,7 +3,7 @@ import numpy as np
 from SymbolicModel import SymbolicModel
     
 
-def SymbolicModelFromFile(file: str):
+def SymbolicModelFromFile(file: str) -> SymbolicModel:
     components = ['STATES', 'PROPS', 'PROGS', 'TESTS']
     mode = None
     num_states = 0
