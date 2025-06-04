@@ -1,5 +1,5 @@
 from lark import Transformer, Lark
-import dd.autoref as _bdd
+import dd.cudd as _bdd
 from SymbolicModel import SymbolicModel, BDD
 from typing import Union
 
@@ -79,32 +79,97 @@ class PDLTransformer(Transformer):
             SYMBOL: /[a-zA-Z_][a-zA-Z0-9_]*/
             """
 
-    def formula(self, items: FormulaItems) -> BDD:
-        name = str(items[0])
-        return self.model.bdd.var(name)
+    # def formula(self, items: FormulaItems) -> BDD:
+    #     name = str(items[0])
+    #     return self.model.bdd.var(name)
     
     def formula_symbol(self, items: FormulaItems) -> BDD:
+        """Returns the formula variable from the model given in the items list
+
+        Args:
+            items (FormulaItems): AST tree as given by the lark parser
+
+        Raises:
+            ValueError: The given formula name is not found in the model
+
+        Returns:
+            BDD: The formula variable from the model.
+        """        
         name = str(items[0])
         if name not in self.model.bdd.vars:
             raise ValueError(f"Expected formula symbol, got unknown: {name}")
         return self.model.bdd.var(name)
 
     def program_symbol(self, items: FormulaItems) -> BDD:
+        """Returns the program from the model given by the items list
+
+        Args:
+            items (FormulaItems): AST tree as given by the lark parser
+
+        Raises:
+            ValueError: The given program name is not found in the model
+
+        Returns:
+            BDD: Returns the program BDD from the model
+        """        
         name = str(items[0])
         if name not in self.model.programs.keys():
             raise ValueError(f"Expected program symbol, got unknown: {name}")
         return self.model.programs[name]
 
     def not_(self, items: FormulaItems) -> BDD:
+        """Returns the negation of the given variable
+
+        Args:
+            items (FormulaItems): The AST tree given by the lark parser, where the first items
+            should be the negate operator ! and the second items should be the variable to be negated
+
+        Raises:
+            ValueError: The AST tree doesn't start with the negate operator.
+
+        Returns:
+            BDD: The negated variable
+        """ 
+        if items[0] != '!':
+            raise ValueError(f'Expected the negate operator, found {items[0]}')
         return ~items[1]
     
     def test(self, items: FormulaItems) -> BDD:
         return self.identity & items[1]
 
     def and_(self, items: FormulaItems) -> BDD:
+        """Returns the conjunction of the two variables given by the AST tree
+
+        Args:
+            items (FormulaItems): The AST tree given by the lark parser, the variables should be
+            the first and third argument, with the conjunction operator between them.
+
+        Raises:
+            ValueError: Second item of the AST tree not the conjunction operator '&'
+
+        Returns:
+            BDD: The result of the conjunction
+        """ 
+        
+        if items[1] != '&':
+            raise ValueError(f'Expected the negate operator, found {items[1]}')
         return items[0] & items[2]
 
     def or_(self, items: FormulaItems) -> BDD:
+        """Returns the disjunction of the two variables given by the AST tree
+
+        Args:
+            items (FormulaItems): The AST tree given by the lark parser, the variables should be
+            the first and third argument, with the disjunction operator between them.
+
+        Raises:
+            ValueError: Second item of the AST tree not the disjunction operator '|'
+
+        Returns:
+            BDD: The result of the disjunction
+        """ 
+        if items[1] != '|':
+            raise ValueError(f'Expected the negate operator, found {items[1]}')
         return items[0] | items[2]
 
     def implies(self, items: FormulaItems) -> BDD:
@@ -114,6 +179,14 @@ class PDLTransformer(Transformer):
         return self.model.bdd.apply('xor', items[0], items[2])
 
     def diamond(self, items: FormulaItems) -> BDD:
+        """_summary_
+
+        Args:
+            items (FormulaItems): _description_
+
+        Returns:
+            BDD: _description_
+        """        
         prog = items[0]
         formula = items[1]
 

@@ -1,5 +1,5 @@
 import numpy as np
-import dd.autoref as _bdd
+import dd.cudd as _bdd
 from typing import Optional, Union
 
 BDD = _bdd.Function
