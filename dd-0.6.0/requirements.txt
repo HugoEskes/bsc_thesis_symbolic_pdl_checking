@@ -1,0 +1,7 @@
+cython==3.0.0
+
+
+# dev
+pytest>=4.6.11
+gitpython
+grip

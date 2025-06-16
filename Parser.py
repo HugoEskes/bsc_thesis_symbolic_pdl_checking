@@ -192,7 +192,7 @@ class PDLTransformer(Transformer):
 
         primed_variables = ([s for s in self.model.bdd.support(prog) if s.endswith("'")])
 
-        return self.model.bdd.exist(primed_variables, prog & self.model.add_primes(self.model.law) & self.model.add_primes(formula))
+        return self.model.bdd.exist(primed_variables, prog & self.model._add_primes(self.model.law) & self.model._add_primes(formula))
 
     def box(self, items: FormulaItems) -> BDD:
         prog = items[0]
@@ -200,7 +200,7 @@ class PDLTransformer(Transformer):
 
         primed_variables = ([s for s in self.model.bdd.support(prog) if s.endswith("'")])
         
-        return self.model.bdd.forall(primed_variables, (prog & self.model.add_primes(self.model.law)).implies(self.model.add_primes(formula)))
+        return self.model.bdd.forall(primed_variables, (prog & self.model._add_primes(self.model.law)).implies(self.model._add_primes(formula)))
 
     def seq(self, items: FormulaItems) -> BDD:
         item_a, item_b = items[0], items[2]
@@ -225,8 +225,8 @@ class PDLTransformer(Transformer):
         return items[1]
 
     def compose(self, first: BDD, second: BDD) -> BDD:
-        first_with_temp = self.model.add_temporary(first, is_primed=True)
-        second_with_temp = self.model.add_temporary(second, is_primed=False)
+        first_with_temp = self.model._add_temporary(first, is_primed=True)
+        second_with_temp = self.model._add_temporary(second, is_primed=False)
 
         compose = first_with_temp & second_with_temp
         
@@ -238,6 +238,6 @@ class PDLTransformer(Transformer):
         identity = self.model.bdd.true
         for proposition in self.model.bdd.support(self.model.law):
             p = self.model.bdd.var(proposition)
-            p_prime = self.model.add_primes(p)
+            p_prime = self.model._add_primes(p)
             identity &= ~self.model.bdd.apply('xor', p, p_prime)
         return identity

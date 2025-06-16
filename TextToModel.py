@@ -1,9 +1,6 @@
-
 import numpy as np
-from SymbolicModel import SymbolicModel
-    
 
-def SymbolicModelFromFile(file: str) -> SymbolicModel:
+def SymbolicModelFromFile(file: str) -> tuple[int, list, list, list, list, list]:
     components = ['STATES', 'PROPS', 'PROGS', 'TESTS']
     mode = None
     num_states = 0
@@ -12,6 +9,7 @@ def SymbolicModelFromFile(file: str) -> SymbolicModel:
     programs = []
     program_names = []
     tests = []
+
     
     with open(file, 'r') as f:
         line = f.readline()
@@ -45,8 +43,7 @@ def SymbolicModelFromFile(file: str) -> SymbolicModel:
             elif mode == 'TESTS':
                 tests.append(line.strip())
                 line = f.readline()
-                
             else:
                 line = f.readline()
-    return SymbolicModel(num_states, valuations, valuation_names, programs, program_names)
-
+    
+    return num_states, valuations, valuation_names, programs, program_names, tests

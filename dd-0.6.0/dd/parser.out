@@ -1,0 +1,1400 @@
+Created by PLY version 3.10 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> expr
+Rule 1     expr -> TRUE
+Rule 2     expr -> FALSE
+Rule 3     expr -> AT number
+Rule 4     number -> NUMBER
+Rule 5     number -> MINUS NUMBER
+Rule 6     expr -> name
+Rule 7     expr -> NOT expr
+Rule 8     expr -> expr AND expr
+Rule 9     expr -> expr OR expr
+Rule 10    expr -> expr XOR expr
+Rule 11    expr -> expr IMPLIES expr
+Rule 12    expr -> expr EQUIV expr
+Rule 13    expr -> expr EQUALS expr
+Rule 14    expr -> expr MINUS expr
+Rule 15    expr -> ITE LPAREN expr COMMA expr COMMA expr RPAREN
+Rule 16    expr -> EXISTS names COLON expr
+Rule 17    expr -> FORALL names COLON expr
+Rule 18    expr -> RENAME subs COLON expr
+Rule 19    subs -> subs COMMA sub
+Rule 20    subs -> sub
+Rule 21    sub -> name DIV name
+Rule 22    names -> names COMMA name
+Rule 23    names -> name
+Rule 24    name -> NAME
+Rule 25    expr -> LPAREN expr RPAREN
+
+Terminals, with rules where they appear
+
+AND                  : 8
+AT                   : 3
+COLON                : 16 17 18
+COMMA                : 15 15 19 22
+DIV                  : 21
+EQUALS               : 13
+EQUIV                : 12
+EXISTS               : 16
+FALSE                : 2
+FORALL               : 17
+IMPLIES              : 11
+ITE                  : 15
+LPAREN               : 15 25
+MINUS                : 5 14
+NAME                 : 24
+NOT                  : 7
+NUMBER               : 4 5
+OR                   : 9
+RENAME               : 18
+RPAREN               : 15 25
+TRUE                 : 1
+XOR                  : 10
+error                : 
+
+Nonterminals, with rules where they appear
+
+expr                 : 7 8 8 9 9 10 10 11 11 12 12 13 13 14 14 15 15 15 16 17 18 25 0
+name                 : 6 21 21 22 23
+names                : 16 17 22
+number               : 3
+sub                  : 19 20
+subs                 : 18 19
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . expr
+    (1) expr -> . TRUE
+    (2) expr -> . FALSE
+    (3) expr -> . AT number
+    (6) expr -> . name
+    (7) expr -> . NOT expr
+    (8) expr -> . expr AND expr
+    (9) expr -> . expr OR expr
+    (10) expr -> . expr XOR expr
+    (11) expr -> . expr IMPLIES expr
+    (12) expr -> . expr EQUIV expr
+    (13) expr -> . expr EQUALS expr
+    (14) expr -> . expr MINUS expr
+    (15) expr -> . ITE LPAREN expr COMMA expr COMMA expr RPAREN
+    (16) expr -> . EXISTS names COLON expr
+    (17) expr -> . FORALL names COLON expr
+    (18) expr -> . RENAME subs COLON expr
+    (25) expr -> . LPAREN expr RPAREN
+    (24) name -> . NAME
+
+    TRUE            shift and go to state 2
+    FALSE           shift and go to state 3
+    AT              shift and go to state 4
+    NOT             shift and go to state 6
+    ITE             shift and go to state 7
+    EXISTS          shift and go to state 9
+    FORALL          shift and go to state 10
+    RENAME          shift and go to state 11
+    LPAREN          shift and go to state 8
+    NAME            shift and go to state 12
+
+    expr                           shift and go to state 1
+    name                           shift and go to state 5
+
+state 1
+
+    (0) S' -> expr .
+    (8) expr -> expr . AND expr
+    (9) expr -> expr . OR expr
+    (10) expr -> expr . XOR expr
+    (11) expr -> expr . IMPLIES expr
+    (12) expr -> expr . EQUIV expr
+    (13) expr -> expr . EQUALS expr
+    (14) expr -> expr . MINUS expr
+
+    AND             shift and go to state 13
+    OR              shift and go to state 14
+    XOR             shift and go to state 15
+    IMPLIES         shift and go to state 16
+    EQUIV           shift and go to state 17
+    EQUALS          shift and go to state 18
+    MINUS           shift and go to state 19
+
+
+state 2
+
+    (1) expr -> TRUE .
+
+    AND             reduce using rule 1 (expr -> TRUE .)
+    OR              reduce using rule 1 (expr -> TRUE .)
+    XOR             reduce using rule 1 (expr -> TRUE .)
+    IMPLIES         reduce using rule 1 (expr -> TRUE .)
+    EQUIV           reduce using rule 1 (expr -> TRUE .)
+    EQUALS          reduce using rule 1 (expr -> TRUE .)
+    MINUS           reduce using rule 1 (expr -> TRUE .)
+    $end            reduce using rule 1 (expr -> TRUE .)
+    RPAREN          reduce using rule 1 (expr -> TRUE .)
+    COMMA           reduce using rule 1 (expr -> TRUE .)
+
+
+state 3
+
+    (2) expr -> FALSE .
+
+    AND             reduce using rule 2 (expr -> FALSE .)
+    OR              reduce using rule 2 (expr -> FALSE .)
+    XOR             reduce using rule 2 (expr -> FALSE .)
+    IMPLIES         reduce using rule 2 (expr -> FALSE .)
+    EQUIV           reduce using rule 2 (expr -> FALSE .)
+    EQUALS          reduce using rule 2 (expr -> FALSE .)
+    MINUS           reduce using rule 2 (expr -> FALSE .)
+    $end            reduce using rule 2 (expr -> FALSE .)
+    RPAREN          reduce using rule 2 (expr -> FALSE .)
+    COMMA           reduce using rule 2 (expr -> FALSE .)
+
+
+state 4
+
+    (3) expr -> AT . number
+    (4) number -> . NUMBER
+    (5) number -> . MINUS NUMBER
+
+    NUMBER          shift and go to state 21
+    MINUS           shift and go to state 22
+
+    number                         shift and go to state 20
+
+state 5
+
+    (6) expr -> name .
+
+    AND             reduce using rule 6 (expr -> name .)
+    OR              reduce using rule 6 (expr -> name .)
+    XOR             reduce using rule 6 (expr -> name .)
+    IMPLIES         reduce using rule 6 (expr -> name .)
+    EQUIV           reduce using rule 6 (expr -> name .)
+    EQUALS          reduce using rule 6 (expr -> name .)
+    MINUS           reduce using rule 6 (expr -> name .)
+    $end            reduce using rule 6 (expr -> name .)
+    RPAREN          reduce using rule 6 (expr -> name .)
+    COMMA           reduce using rule 6 (expr -> name .)
+
+
+state 6
+
+    (7) expr -> NOT . expr
+    (1) expr -> . TRUE
+    (2) expr -> . FALSE
+    (3) expr -> . AT number
+    (6) expr -> . name
+    (7) expr -> . NOT expr
+    (8) expr -> . expr AND expr
+    (9) expr -> . expr OR expr
+    (10) expr -> . expr XOR expr
+    (11) expr -> . expr IMPLIES expr
+    (12) expr -> . expr EQUIV expr
+    (13) expr -> . expr EQUALS expr
+    (14) expr -> . expr MINUS expr
+    (15) expr -> . ITE LPAREN expr COMMA expr COMMA expr RPAREN
+    (16) expr -> . EXISTS names COLON expr
+    (17) expr -> . FORALL names COLON expr
+    (18) expr -> . RENAME subs COLON expr
+    (25) expr -> . LPAREN expr RPAREN
+    (24) name -> . NAME
+
+    TRUE            shift and go to state 2
+    FALSE           shift and go to state 3
+    AT              shift and go to state 4
+    NOT             shift and go to state 6
+    ITE             shift and go to state 7
+    EXISTS          shift and go to state 9
+    FORALL          shift and go to state 10
+    RENAME          shift and go to state 11
+    LPAREN          shift and go to state 8
+    NAME            shift and go to state 12
+
+    expr                           shift and go to state 23
+    name                           shift and go to state 5
+
+state 7
+
+    (15) expr -> ITE . LPAREN expr COMMA expr COMMA expr RPAREN
+
+    LPAREN          shift and go to state 24
+
+
+state 8
+
+    (25) expr -> LPAREN . expr RPAREN
+    (1) expr -> . TRUE
+    (2) expr -> . FALSE
+    (3) expr -> . AT number
+    (6) expr -> . name
+    (7) expr -> . NOT expr
+    (8) expr -> . expr AND expr
+    (9) expr -> . expr OR expr
+    (10) expr -> . expr XOR expr
+    (11) expr -> . expr IMPLIES expr
+    (12) expr -> . expr EQUIV expr
+    (13) expr -> . expr EQUALS expr
+    (14) expr -> . expr MINUS expr
+    (15) expr -> . ITE LPAREN expr COMMA expr COMMA expr RPAREN
+    (16) expr -> . EXISTS names COLON expr
+    (17) expr -> . FORALL names COLON expr
+    (18) expr -> . RENAME subs COLON expr
+    (25) expr -> . LPAREN expr RPAREN
+    (24) name -> . NAME
+
+    TRUE            shift and go to state 2
+    FALSE           shift and go to state 3
+    AT              shift and go to state 4
+    NOT             shift and go to state 6
+    ITE             shift and go to state 7
+    EXISTS          shift and go to state 9
+    FORALL          shift and go to state 10
+    RENAME          shift and go to state 11
+    LPAREN          shift and go to state 8
+    NAME            shift and go to state 12
+
+    expr                           shift and go to state 25
+    name                           shift and go to state 5
+
+state 9
+
+    (16) expr -> EXISTS . names COLON expr
+    (22) names -> . names COMMA name
+    (23) names -> . name
+    (24) name -> . NAME
+
+    NAME            shift and go to state 12
+
+    names                          shift and go to state 26
+    name                           shift and go to state 27
+
+state 10
+
+    (17) expr -> FORALL . names COLON expr
+    (22) names -> . names COMMA name
+    (23) names -> . name
+    (24) name -> . NAME
+
+    NAME            shift and go to state 12
+
+    names                          shift and go to state 28
+    name                           shift and go to state 27
+
+state 11
+
+    (18) expr -> RENAME . subs COLON expr
+    (19) subs -> . subs COMMA sub
+    (20) subs -> . sub
+    (21) sub -> . name DIV name
+    (24) name -> . NAME
+
+    NAME            shift and go to state 12
+
+    subs                           shift and go to state 29
+    sub                            shift and go to state 30
+    name                           shift and go to state 31
+
+state 12
+
+    (24) name -> NAME .
+
+    AND             reduce using rule 24 (name -> NAME .)
+    OR              reduce using rule 24 (name -> NAME .)
+    XOR             reduce using rule 24 (name -> NAME .)
+    IMPLIES         reduce using rule 24 (name -> NAME .)
+    EQUIV           reduce using rule 24 (name -> NAME .)
+    EQUALS          reduce using rule 24 (name -> NAME .)
+    MINUS           reduce using rule 24 (name -> NAME .)
+    $end            reduce using rule 24 (name -> NAME .)
+    RPAREN          reduce using rule 24 (name -> NAME .)
+    COMMA           reduce using rule 24 (name -> NAME .)
+    COLON           reduce using rule 24 (name -> NAME .)
+    DIV             reduce using rule 24 (name -> NAME .)
+
+
+state 13
+
+    (8) expr -> expr AND . expr
+    (1) expr -> . TRUE
+    (2) expr -> . FALSE
+    (3) expr -> . AT number
+    (6) expr -> . name
+    (7) expr -> . NOT expr
+    (8) expr -> . expr AND expr
+    (9) expr -> . expr OR expr
+    (10) expr -> . expr XOR expr
+    (11) expr -> . expr IMPLIES expr
+    (12) expr -> . expr EQUIV expr
+    (13) expr -> . expr EQUALS expr
+    (14) expr -> . expr MINUS expr
+    (15) expr -> . ITE LPAREN expr COMMA expr COMMA expr RPAREN
+    (16) expr -> . EXISTS names COLON expr
+    (17) expr -> . FORALL names COLON expr
+    (18) expr -> . RENAME subs COLON expr
+    (25) expr -> . LPAREN expr RPAREN
+    (24) name -> . NAME
+
+    TRUE            shift and go to state 2
+    FALSE           shift and go to state 3
+    AT              shift and go to state 4
+    NOT             shift and go to state 6
+    ITE             shift and go to state 7
+    EXISTS          shift and go to state 9
+    FORALL          shift and go to state 10
+    RENAME          shift and go to state 11
+    LPAREN          shift and go to state 8
+    NAME            shift and go to state 12
+
+    expr                           shift and go to state 32
+    name                           shift and go to state 5
+
+state 14
+
+    (9) expr -> expr OR . expr
+    (1) expr -> . TRUE
+    (2) expr -> . FALSE
+    (3) expr -> . AT number
+    (6) expr -> . name
+    (7) expr -> . NOT expr
+    (8) expr -> . expr AND expr
+    (9) expr -> . expr OR expr
+    (10) expr -> . expr XOR expr
+    (11) expr -> . expr IMPLIES expr
+    (12) expr -> . expr EQUIV expr
+    (13) expr -> . expr EQUALS expr
+    (14) expr -> . expr MINUS expr
+    (15) expr -> . ITE LPAREN expr COMMA expr COMMA expr RPAREN
+    (16) expr -> . EXISTS names COLON expr
+    (17) expr -> . FORALL names COLON expr
+    (18) expr -> . RENAME subs COLON expr
+    (25) expr -> . LPAREN expr RPAREN
+    (24) name -> . NAME
+
+    TRUE            shift and go to state 2
+    FALSE           shift and go to state 3
+    AT              shift and go to state 4
+    NOT             shift and go to state 6
+    ITE             shift and go to state 7
+    EXISTS          shift and go to state 9
+    FORALL          shift and go to state 10
+    RENAME          shift and go to state 11
+    LPAREN          shift and go to state 8
+    NAME            shift and go to state 12
+
+    expr                           shift and go to state 33
+    name                           shift and go to state 5
+
+state 15
+
+    (10) expr -> expr XOR . expr
+    (1) expr -> . TRUE
+    (2) expr -> . FALSE
+    (3) expr -> . AT number
+    (6) expr -> . name
+    (7) expr -> . NOT expr
+    (8) expr -> . expr AND expr
+    (9) expr -> . expr OR expr
+    (10) expr -> . expr XOR expr
+    (11) expr -> . expr IMPLIES expr
+    (12) expr -> . expr EQUIV expr
+    (13) expr -> . expr EQUALS expr
+    (14) expr -> . expr MINUS expr
+    (15) expr -> . ITE LPAREN expr COMMA expr COMMA expr RPAREN
+    (16) expr -> . EXISTS names COLON expr
+    (17) expr -> . FORALL names COLON expr
+    (18) expr -> . RENAME subs COLON expr
+    (25) expr -> . LPAREN expr RPAREN
+    (24) name -> . NAME
+
+    TRUE            shift and go to state 2
+    FALSE           shift and go to state 3
+    AT              shift and go to state 4
+    NOT             shift and go to state 6
+    ITE             shift and go to state 7
+    EXISTS          shift and go to state 9
+    FORALL          shift and go to state 10
+    RENAME          shift and go to state 11
+    LPAREN          shift and go to state 8
+    NAME            shift and go to state 12
+
+    expr                           shift and go to state 34
+    name                           shift and go to state 5
+
+state 16
+
+    (11) expr -> expr IMPLIES . expr
+    (1) expr -> . TRUE
+    (2) expr -> . FALSE
+    (3) expr -> . AT number
+    (6) expr -> . name
+    (7) expr -> . NOT expr
+    (8) expr -> . expr AND expr
+    (9) expr -> . expr OR expr
+    (10) expr -> . expr XOR expr
+    (11) expr -> . expr IMPLIES expr
+    (12) expr -> . expr EQUIV expr
+    (13) expr -> . expr EQUALS expr
+    (14) expr -> . expr MINUS expr
+    (15) expr -> . ITE LPAREN expr COMMA expr COMMA expr RPAREN
+    (16) expr -> . EXISTS names COLON expr
+    (17) expr -> . FORALL names COLON expr
+    (18) expr -> . RENAME subs COLON expr
+    (25) expr -> . LPAREN expr RPAREN
+    (24) name -> . NAME
+
+    TRUE            shift and go to state 2
+    FALSE           shift and go to state 3
+    AT              shift and go to state 4
+    NOT             shift and go to state 6
+    ITE             shift and go to state 7
+    EXISTS          shift and go to state 9
+    FORALL          shift and go to state 10
+    RENAME          shift and go to state 11
+    LPAREN          shift and go to state 8
+    NAME            shift and go to state 12
+
+    expr                           shift and go to state 35
+    name                           shift and go to state 5
+
+state 17
+
+    (12) expr -> expr EQUIV . expr
+    (1) expr -> . TRUE
+    (2) expr -> . FALSE
+    (3) expr -> . AT number
+    (6) expr -> . name
+    (7) expr -> . NOT expr
+    (8) expr -> . expr AND expr
+    (9) expr -> . expr OR expr
+    (10) expr -> . expr XOR expr
+    (11) expr -> . expr IMPLIES expr
+    (12) expr -> . expr EQUIV expr
+    (13) expr -> . expr EQUALS expr
+    (14) expr -> . expr MINUS expr
+    (15) expr -> . ITE LPAREN expr COMMA expr COMMA expr RPAREN
+    (16) expr -> . EXISTS names COLON expr
+    (17) expr -> . FORALL names COLON expr
+    (18) expr -> . RENAME subs COLON expr
+    (25) expr -> . LPAREN expr RPAREN
+    (24) name -> . NAME
+
+    TRUE            shift and go to state 2
+    FALSE           shift and go to state 3
+    AT              shift and go to state 4
+    NOT             shift and go to state 6
+    ITE             shift and go to state 7
+    EXISTS          shift and go to state 9
+    FORALL          shift and go to state 10
+    RENAME          shift and go to state 11
+    LPAREN          shift and go to state 8
+    NAME            shift and go to state 12
+
+    expr                           shift and go to state 36
+    name                           shift and go to state 5
+
+state 18
+
+    (13) expr -> expr EQUALS . expr
+    (1) expr -> . TRUE
+    (2) expr -> . FALSE
+    (3) expr -> . AT number
+    (6) expr -> . name
+    (7) expr -> . NOT expr
+    (8) expr -> . expr AND expr
+    (9) expr -> . expr OR expr
+    (10) expr -> . expr XOR expr
+    (11) expr -> . expr IMPLIES expr
+    (12) expr -> . expr EQUIV expr
+    (13) expr -> . expr EQUALS expr
+    (14) expr -> . expr MINUS expr
+    (15) expr -> . ITE LPAREN expr COMMA expr COMMA expr RPAREN
+    (16) expr -> . EXISTS names COLON expr
+    (17) expr -> . FORALL names COLON expr
+    (18) expr -> . RENAME subs COLON expr
+    (25) expr -> . LPAREN expr RPAREN
+    (24) name -> . NAME
+
+    TRUE            shift and go to state 2
+    FALSE           shift and go to state 3
+    AT              shift and go to state 4
+    NOT             shift and go to state 6
+    ITE             shift and go to state 7
+    EXISTS          shift and go to state 9
+    FORALL          shift and go to state 10
+    RENAME          shift and go to state 11
+    LPAREN          shift and go to state 8
+    NAME            shift and go to state 12
+
+    expr                           shift and go to state 37
+    name                           shift and go to state 5
+
+state 19
+
+    (14) expr -> expr MINUS . expr
+    (1) expr -> . TRUE
+    (2) expr -> . FALSE
+    (3) expr -> . AT number
+    (6) expr -> . name
+    (7) expr -> . NOT expr
+    (8) expr -> . expr AND expr
+    (9) expr -> . expr OR expr
+    (10) expr -> . expr XOR expr
+    (11) expr -> . expr IMPLIES expr
+    (12) expr -> . expr EQUIV expr
+    (13) expr -> . expr EQUALS expr
+    (14) expr -> . expr MINUS expr
+    (15) expr -> . ITE LPAREN expr COMMA expr COMMA expr RPAREN
+    (16) expr -> . EXISTS names COLON expr
+    (17) expr -> . FORALL names COLON expr
+    (18) expr -> . RENAME subs COLON expr
+    (25) expr -> . LPAREN expr RPAREN
+    (24) name -> . NAME
+
+    TRUE            shift and go to state 2
+    FALSE           shift and go to state 3
+    AT              shift and go to state 4
+    NOT             shift and go to state 6
+    ITE             shift and go to state 7
+    EXISTS          shift and go to state 9
+    FORALL          shift and go to state 10
+    RENAME          shift and go to state 11
+    LPAREN          shift and go to state 8
+    NAME            shift and go to state 12
+
+    expr                           shift and go to state 38
+    name                           shift and go to state 5
+
+state 20
+
+    (3) expr -> AT number .
+
+    AND             reduce using rule 3 (expr -> AT number .)
+    OR              reduce using rule 3 (expr -> AT number .)
+    XOR             reduce using rule 3 (expr -> AT number .)
+    IMPLIES         reduce using rule 3 (expr -> AT number .)
+    EQUIV           reduce using rule 3 (expr -> AT number .)
+    EQUALS          reduce using rule 3 (expr -> AT number .)
+    MINUS           reduce using rule 3 (expr -> AT number .)
+    $end            reduce using rule 3 (expr -> AT number .)
+    RPAREN          reduce using rule 3 (expr -> AT number .)
+    COMMA           reduce using rule 3 (expr -> AT number .)
+
+
+state 21
+
+    (4) number -> NUMBER .
+
+    AND             reduce using rule 4 (number -> NUMBER .)
+    OR              reduce using rule 4 (number -> NUMBER .)
+    XOR             reduce using rule 4 (number -> NUMBER .)
+    IMPLIES         reduce using rule 4 (number -> NUMBER .)
+    EQUIV           reduce using rule 4 (number -> NUMBER .)
+    EQUALS          reduce using rule 4 (number -> NUMBER .)
+    MINUS           reduce using rule 4 (number -> NUMBER .)
+    $end            reduce using rule 4 (number -> NUMBER .)
+    RPAREN          reduce using rule 4 (number -> NUMBER .)
+    COMMA           reduce using rule 4 (number -> NUMBER .)
+
+
+state 22
+
+    (5) number -> MINUS . NUMBER
+
+    NUMBER          shift and go to state 39
+
+
+state 23
+
+    (7) expr -> NOT expr .
+    (8) expr -> expr . AND expr
+    (9) expr -> expr . OR expr
+    (10) expr -> expr . XOR expr
+    (11) expr -> expr . IMPLIES expr
+    (12) expr -> expr . EQUIV expr
+    (13) expr -> expr . EQUALS expr
+    (14) expr -> expr . MINUS expr
+
+    AND             reduce using rule 7 (expr -> NOT expr .)
+    OR              reduce using rule 7 (expr -> NOT expr .)
+    XOR             reduce using rule 7 (expr -> NOT expr .)
+    IMPLIES         reduce using rule 7 (expr -> NOT expr .)
+    EQUIV           reduce using rule 7 (expr -> NOT expr .)
+    EQUALS          reduce using rule 7 (expr -> NOT expr .)
+    MINUS           reduce using rule 7 (expr -> NOT expr .)
+    $end            reduce using rule 7 (expr -> NOT expr .)
+    RPAREN          reduce using rule 7 (expr -> NOT expr .)
+    COMMA           reduce using rule 7 (expr -> NOT expr .)
+
+  ! AND             [ shift and go to state 13 ]
+  ! OR              [ shift and go to state 14 ]
+  ! XOR             [ shift and go to state 15 ]
+  ! IMPLIES         [ shift and go to state 16 ]
+  ! EQUIV           [ shift and go to state 17 ]
+  ! EQUALS          [ shift and go to state 18 ]
+  ! MINUS           [ shift and go to state 19 ]
+
+
+state 24
+
+    (15) expr -> ITE LPAREN . expr COMMA expr COMMA expr RPAREN
+    (1) expr -> . TRUE
+    (2) expr -> . FALSE
+    (3) expr -> . AT number
+    (6) expr -> . name
+    (7) expr -> . NOT expr
+    (8) expr -> . expr AND expr
+    (9) expr -> . expr OR expr
+    (10) expr -> . expr XOR expr
+    (11) expr -> . expr IMPLIES expr
+    (12) expr -> . expr EQUIV expr
+    (13) expr -> . expr EQUALS expr
+    (14) expr -> . expr MINUS expr
+    (15) expr -> . ITE LPAREN expr COMMA expr COMMA expr RPAREN
+    (16) expr -> . EXISTS names COLON expr
+    (17) expr -> . FORALL names COLON expr
+    (18) expr -> . RENAME subs COLON expr
+    (25) expr -> . LPAREN expr RPAREN
+    (24) name -> . NAME
+
+    TRUE            shift and go to state 2
+    FALSE           shift and go to state 3
+    AT              shift and go to state 4
+    NOT             shift and go to state 6
+    ITE             shift and go to state 7
+    EXISTS          shift and go to state 9
+    FORALL          shift and go to state 10
+    RENAME          shift and go to state 11
+    LPAREN          shift and go to state 8
+    NAME            shift and go to state 12
+
+    expr                           shift and go to state 40
+    name                           shift and go to state 5
+
+state 25
+
+    (25) expr -> LPAREN expr . RPAREN
+    (8) expr -> expr . AND expr
+    (9) expr -> expr . OR expr
+    (10) expr -> expr . XOR expr
+    (11) expr -> expr . IMPLIES expr
+    (12) expr -> expr . EQUIV expr
+    (13) expr -> expr . EQUALS expr
+    (14) expr -> expr . MINUS expr
+
+    RPAREN          shift and go to state 41
+    AND             shift and go to state 13
+    OR              shift and go to state 14
+    XOR             shift and go to state 15
+    IMPLIES         shift and go to state 16
+    EQUIV           shift and go to state 17
+    EQUALS          shift and go to state 18
+    MINUS           shift and go to state 19
+
+
+state 26
+
+    (16) expr -> EXISTS names . COLON expr
+    (22) names -> names . COMMA name
+
+    COLON           shift and go to state 42
+    COMMA           shift and go to state 43
+
+
+state 27
+
+    (23) names -> name .
+
+    COLON           reduce using rule 23 (names -> name .)
+    COMMA           reduce using rule 23 (names -> name .)
+
+
+state 28
+
+    (17) expr -> FORALL names . COLON expr
+    (22) names -> names . COMMA name
+
+    COLON           shift and go to state 44
+    COMMA           shift and go to state 43
+
+
+state 29
+
+    (18) expr -> RENAME subs . COLON expr
+    (19) subs -> subs . COMMA sub
+
+    COLON           shift and go to state 45
+    COMMA           shift and go to state 46
+
+
+state 30
+
+    (20) subs -> sub .
+
+    COLON           reduce using rule 20 (subs -> sub .)
+    COMMA           reduce using rule 20 (subs -> sub .)
+
+
+state 31
+
+    (21) sub -> name . DIV name
+
+    DIV             shift and go to state 47
+
+
+state 32
+
+    (8) expr -> expr AND expr .
+    (8) expr -> expr . AND expr
+    (9) expr -> expr . OR expr
+    (10) expr -> expr . XOR expr
+    (11) expr -> expr . IMPLIES expr
+    (12) expr -> expr . EQUIV expr
+    (13) expr -> expr . EQUALS expr
+    (14) expr -> expr . MINUS expr
+
+    AND             reduce using rule 8 (expr -> expr AND expr .)
+    OR              reduce using rule 8 (expr -> expr AND expr .)
+    XOR             reduce using rule 8 (expr -> expr AND expr .)
+    IMPLIES         reduce using rule 8 (expr -> expr AND expr .)
+    EQUIV           reduce using rule 8 (expr -> expr AND expr .)
+    MINUS           reduce using rule 8 (expr -> expr AND expr .)
+    $end            reduce using rule 8 (expr -> expr AND expr .)
+    RPAREN          reduce using rule 8 (expr -> expr AND expr .)
+    COMMA           reduce using rule 8 (expr -> expr AND expr .)
+    EQUALS          shift and go to state 18
+
+  ! EQUALS          [ reduce using rule 8 (expr -> expr AND expr .) ]
+  ! AND             [ shift and go to state 13 ]
+  ! OR              [ shift and go to state 14 ]
+  ! XOR             [ shift and go to state 15 ]
+  ! IMPLIES         [ shift and go to state 16 ]
+  ! EQUIV           [ shift and go to state 17 ]
+  ! MINUS           [ shift and go to state 19 ]
+
+
+state 33
+
+    (9) expr -> expr OR expr .
+    (8) expr -> expr . AND expr
+    (9) expr -> expr . OR expr
+    (10) expr -> expr . XOR expr
+    (11) expr -> expr . IMPLIES expr
+    (12) expr -> expr . EQUIV expr
+    (13) expr -> expr . EQUALS expr
+    (14) expr -> expr . MINUS expr
+
+    OR              reduce using rule 9 (expr -> expr OR expr .)
+    XOR             reduce using rule 9 (expr -> expr OR expr .)
+    IMPLIES         reduce using rule 9 (expr -> expr OR expr .)
+    EQUIV           reduce using rule 9 (expr -> expr OR expr .)
+    MINUS           reduce using rule 9 (expr -> expr OR expr .)
+    $end            reduce using rule 9 (expr -> expr OR expr .)
+    RPAREN          reduce using rule 9 (expr -> expr OR expr .)
+    COMMA           reduce using rule 9 (expr -> expr OR expr .)
+    AND             shift and go to state 13
+    EQUALS          shift and go to state 18
+
+  ! AND             [ reduce using rule 9 (expr -> expr OR expr .) ]
+  ! EQUALS          [ reduce using rule 9 (expr -> expr OR expr .) ]
+  ! OR              [ shift and go to state 14 ]
+  ! XOR             [ shift and go to state 15 ]
+  ! IMPLIES         [ shift and go to state 16 ]
+  ! EQUIV           [ shift and go to state 17 ]
+  ! MINUS           [ shift and go to state 19 ]
+
+
+state 34
+
+    (10) expr -> expr XOR expr .
+    (8) expr -> expr . AND expr
+    (9) expr -> expr . OR expr
+    (10) expr -> expr . XOR expr
+    (11) expr -> expr . IMPLIES expr
+    (12) expr -> expr . EQUIV expr
+    (13) expr -> expr . EQUALS expr
+    (14) expr -> expr . MINUS expr
+
+    XOR             reduce using rule 10 (expr -> expr XOR expr .)
+    IMPLIES         reduce using rule 10 (expr -> expr XOR expr .)
+    EQUIV           reduce using rule 10 (expr -> expr XOR expr .)
+    MINUS           reduce using rule 10 (expr -> expr XOR expr .)
+    $end            reduce using rule 10 (expr -> expr XOR expr .)
+    RPAREN          reduce using rule 10 (expr -> expr XOR expr .)
+    COMMA           reduce using rule 10 (expr -> expr XOR expr .)
+    AND             shift and go to state 13
+    OR              shift and go to state 14
+    EQUALS          shift and go to state 18
+
+  ! AND             [ reduce using rule 10 (expr -> expr XOR expr .) ]
+  ! OR              [ reduce using rule 10 (expr -> expr XOR expr .) ]
+  ! EQUALS          [ reduce using rule 10 (expr -> expr XOR expr .) ]
+  ! XOR             [ shift and go to state 15 ]
+  ! IMPLIES         [ shift and go to state 16 ]
+  ! EQUIV           [ shift and go to state 17 ]
+  ! MINUS           [ shift and go to state 19 ]
+
+
+state 35
+
+    (11) expr -> expr IMPLIES expr .
+    (8) expr -> expr . AND expr
+    (9) expr -> expr . OR expr
+    (10) expr -> expr . XOR expr
+    (11) expr -> expr . IMPLIES expr
+    (12) expr -> expr . EQUIV expr
+    (13) expr -> expr . EQUALS expr
+    (14) expr -> expr . MINUS expr
+
+    IMPLIES         reduce using rule 11 (expr -> expr IMPLIES expr .)
+    EQUIV           reduce using rule 11 (expr -> expr IMPLIES expr .)
+    $end            reduce using rule 11 (expr -> expr IMPLIES expr .)
+    RPAREN          reduce using rule 11 (expr -> expr IMPLIES expr .)
+    COMMA           reduce using rule 11 (expr -> expr IMPLIES expr .)
+    AND             shift and go to state 13
+    OR              shift and go to state 14
+    XOR             shift and go to state 15
+    EQUALS          shift and go to state 18
+    MINUS           shift and go to state 19
+
+  ! AND             [ reduce using rule 11 (expr -> expr IMPLIES expr .) ]
+  ! OR              [ reduce using rule 11 (expr -> expr IMPLIES expr .) ]
+  ! XOR             [ reduce using rule 11 (expr -> expr IMPLIES expr .) ]
+  ! EQUALS          [ reduce using rule 11 (expr -> expr IMPLIES expr .) ]
+  ! MINUS           [ reduce using rule 11 (expr -> expr IMPLIES expr .) ]
+  ! IMPLIES         [ shift and go to state 16 ]
+  ! EQUIV           [ shift and go to state 17 ]
+
+
+state 36
+
+    (12) expr -> expr EQUIV expr .
+    (8) expr -> expr . AND expr
+    (9) expr -> expr . OR expr
+    (10) expr -> expr . XOR expr
+    (11) expr -> expr . IMPLIES expr
+    (12) expr -> expr . EQUIV expr
+    (13) expr -> expr . EQUALS expr
+    (14) expr -> expr . MINUS expr
+
+    EQUIV           reduce using rule 12 (expr -> expr EQUIV expr .)
+    $end            reduce using rule 12 (expr -> expr EQUIV expr .)
+    RPAREN          reduce using rule 12 (expr -> expr EQUIV expr .)
+    COMMA           reduce using rule 12 (expr -> expr EQUIV expr .)
+    AND             shift and go to state 13
+    OR              shift and go to state 14
+    XOR             shift and go to state 15
+    IMPLIES         shift and go to state 16
+    EQUALS          shift and go to state 18
+    MINUS           shift and go to state 19
+
+  ! AND             [ reduce using rule 12 (expr -> expr EQUIV expr .) ]
+  ! OR              [ reduce using rule 12 (expr -> expr EQUIV expr .) ]
+  ! XOR             [ reduce using rule 12 (expr -> expr EQUIV expr .) ]
+  ! IMPLIES         [ reduce using rule 12 (expr -> expr EQUIV expr .) ]
+  ! EQUALS          [ reduce using rule 12 (expr -> expr EQUIV expr .) ]
+  ! MINUS           [ reduce using rule 12 (expr -> expr EQUIV expr .) ]
+  ! EQUIV           [ shift and go to state 17 ]
+
+
+state 37
+
+    (13) expr -> expr EQUALS expr .
+    (8) expr -> expr . AND expr
+    (9) expr -> expr . OR expr
+    (10) expr -> expr . XOR expr
+    (11) expr -> expr . IMPLIES expr
+    (12) expr -> expr . EQUIV expr
+    (13) expr -> expr . EQUALS expr
+    (14) expr -> expr . MINUS expr
+
+    AND             reduce using rule 13 (expr -> expr EQUALS expr .)
+    OR              reduce using rule 13 (expr -> expr EQUALS expr .)
+    XOR             reduce using rule 13 (expr -> expr EQUALS expr .)
+    IMPLIES         reduce using rule 13 (expr -> expr EQUALS expr .)
+    EQUIV           reduce using rule 13 (expr -> expr EQUALS expr .)
+    EQUALS          reduce using rule 13 (expr -> expr EQUALS expr .)
+    MINUS           reduce using rule 13 (expr -> expr EQUALS expr .)
+    $end            reduce using rule 13 (expr -> expr EQUALS expr .)
+    RPAREN          reduce using rule 13 (expr -> expr EQUALS expr .)
+    COMMA           reduce using rule 13 (expr -> expr EQUALS expr .)
+
+  ! AND             [ shift and go to state 13 ]
+  ! OR              [ shift and go to state 14 ]
+  ! XOR             [ shift and go to state 15 ]
+  ! IMPLIES         [ shift and go to state 16 ]
+  ! EQUIV           [ shift and go to state 17 ]
+  ! EQUALS          [ shift and go to state 18 ]
+  ! MINUS           [ shift and go to state 19 ]
+
+
+state 38
+
+    (14) expr -> expr MINUS expr .
+    (8) expr -> expr . AND expr
+    (9) expr -> expr . OR expr
+    (10) expr -> expr . XOR expr
+    (11) expr -> expr . IMPLIES expr
+    (12) expr -> expr . EQUIV expr
+    (13) expr -> expr . EQUALS expr
+    (14) expr -> expr . MINUS expr
+
+    IMPLIES         reduce using rule 14 (expr -> expr MINUS expr .)
+    EQUIV           reduce using rule 14 (expr -> expr MINUS expr .)
+    MINUS           reduce using rule 14 (expr -> expr MINUS expr .)
+    $end            reduce using rule 14 (expr -> expr MINUS expr .)
+    RPAREN          reduce using rule 14 (expr -> expr MINUS expr .)
+    COMMA           reduce using rule 14 (expr -> expr MINUS expr .)
+    AND             shift and go to state 13
+    OR              shift and go to state 14
+    XOR             shift and go to state 15
+    EQUALS          shift and go to state 18
+
+  ! AND             [ reduce using rule 14 (expr -> expr MINUS expr .) ]
+  ! OR              [ reduce using rule 14 (expr -> expr MINUS expr .) ]
+  ! XOR             [ reduce using rule 14 (expr -> expr MINUS expr .) ]
+  ! EQUALS          [ reduce using rule 14 (expr -> expr MINUS expr .) ]
+  ! IMPLIES         [ shift and go to state 16 ]
+  ! EQUIV           [ shift and go to state 17 ]
+  ! MINUS           [ shift and go to state 19 ]
+
+
+state 39
+
+    (5) number -> MINUS NUMBER .
+
+    AND             reduce using rule 5 (number -> MINUS NUMBER .)
+    OR              reduce using rule 5 (number -> MINUS NUMBER .)
+    XOR             reduce using rule 5 (number -> MINUS NUMBER .)
+    IMPLIES         reduce using rule 5 (number -> MINUS NUMBER .)
+    EQUIV           reduce using rule 5 (number -> MINUS NUMBER .)
+    EQUALS          reduce using rule 5 (number -> MINUS NUMBER .)
+    MINUS           reduce using rule 5 (number -> MINUS NUMBER .)
+    $end            reduce using rule 5 (number -> MINUS NUMBER .)
+    RPAREN          reduce using rule 5 (number -> MINUS NUMBER .)
+    COMMA           reduce using rule 5 (number -> MINUS NUMBER .)
+
+
+state 40
+
+    (15) expr -> ITE LPAREN expr . COMMA expr COMMA expr RPAREN
+    (8) expr -> expr . AND expr
+    (9) expr -> expr . OR expr
+    (10) expr -> expr . XOR expr
+    (11) expr -> expr . IMPLIES expr
+    (12) expr -> expr . EQUIV expr
+    (13) expr -> expr . EQUALS expr
+    (14) expr -> expr . MINUS expr
+
+    COMMA           shift and go to state 48
+    AND             shift and go to state 13
+    OR              shift and go to state 14
+    XOR             shift and go to state 15
+    IMPLIES         shift and go to state 16
+    EQUIV           shift and go to state 17
+    EQUALS          shift and go to state 18
+    MINUS           shift and go to state 19
+
+
+state 41
+
+    (25) expr -> LPAREN expr RPAREN .
+
+    AND             reduce using rule 25 (expr -> LPAREN expr RPAREN .)
+    OR              reduce using rule 25 (expr -> LPAREN expr RPAREN .)
+    XOR             reduce using rule 25 (expr -> LPAREN expr RPAREN .)
+    IMPLIES         reduce using rule 25 (expr -> LPAREN expr RPAREN .)
+    EQUIV           reduce using rule 25 (expr -> LPAREN expr RPAREN .)
+    EQUALS          reduce using rule 25 (expr -> LPAREN expr RPAREN .)
+    MINUS           reduce using rule 25 (expr -> LPAREN expr RPAREN .)
+    $end            reduce using rule 25 (expr -> LPAREN expr RPAREN .)
+    RPAREN          reduce using rule 25 (expr -> LPAREN expr RPAREN .)
+    COMMA           reduce using rule 25 (expr -> LPAREN expr RPAREN .)
+
+
+state 42
+
+    (16) expr -> EXISTS names COLON . expr
+    (1) expr -> . TRUE
+    (2) expr -> . FALSE
+    (3) expr -> . AT number
+    (6) expr -> . name
+    (7) expr -> . NOT expr
+    (8) expr -> . expr AND expr
+    (9) expr -> . expr OR expr
+    (10) expr -> . expr XOR expr
+    (11) expr -> . expr IMPLIES expr
+    (12) expr -> . expr EQUIV expr
+    (13) expr -> . expr EQUALS expr
+    (14) expr -> . expr MINUS expr
+    (15) expr -> . ITE LPAREN expr COMMA expr COMMA expr RPAREN
+    (16) expr -> . EXISTS names COLON expr
+    (17) expr -> . FORALL names COLON expr
+    (18) expr -> . RENAME subs COLON expr
+    (25) expr -> . LPAREN expr RPAREN
+    (24) name -> . NAME
+
+    TRUE            shift and go to state 2
+    FALSE           shift and go to state 3
+    AT              shift and go to state 4
+    NOT             shift and go to state 6
+    ITE             shift and go to state 7
+    EXISTS          shift and go to state 9
+    FORALL          shift and go to state 10
+    RENAME          shift and go to state 11
+    LPAREN          shift and go to state 8
+    NAME            shift and go to state 12
+
+    expr                           shift and go to state 49
+    name                           shift and go to state 5
+
+state 43
+
+    (22) names -> names COMMA . name
+    (24) name -> . NAME
+
+    NAME            shift and go to state 12
+
+    name                           shift and go to state 50
+
+state 44
+
+    (17) expr -> FORALL names COLON . expr
+    (1) expr -> . TRUE
+    (2) expr -> . FALSE
+    (3) expr -> . AT number
+    (6) expr -> . name
+    (7) expr -> . NOT expr
+    (8) expr -> . expr AND expr
+    (9) expr -> . expr OR expr
+    (10) expr -> . expr XOR expr
+    (11) expr -> . expr IMPLIES expr
+    (12) expr -> . expr EQUIV expr
+    (13) expr -> . expr EQUALS expr
+    (14) expr -> . expr MINUS expr
+    (15) expr -> . ITE LPAREN expr COMMA expr COMMA expr RPAREN
+    (16) expr -> . EXISTS names COLON expr
+    (17) expr -> . FORALL names COLON expr
+    (18) expr -> . RENAME subs COLON expr
+    (25) expr -> . LPAREN expr RPAREN
+    (24) name -> . NAME
+
+    TRUE            shift and go to state 2
+    FALSE           shift and go to state 3
+    AT              shift and go to state 4
+    NOT             shift and go to state 6
+    ITE             shift and go to state 7
+    EXISTS          shift and go to state 9
+    FORALL          shift and go to state 10
+    RENAME          shift and go to state 11
+    LPAREN          shift and go to state 8
+    NAME            shift and go to state 12
+
+    expr                           shift and go to state 51
+    name                           shift and go to state 5
+
+state 45
+
+    (18) expr -> RENAME subs COLON . expr
+    (1) expr -> . TRUE
+    (2) expr -> . FALSE
+    (3) expr -> . AT number
+    (6) expr -> . name
+    (7) expr -> . NOT expr
+    (8) expr -> . expr AND expr
+    (9) expr -> . expr OR expr
+    (10) expr -> . expr XOR expr
+    (11) expr -> . expr IMPLIES expr
+    (12) expr -> . expr EQUIV expr
+    (13) expr -> . expr EQUALS expr
+    (14) expr -> . expr MINUS expr
+    (15) expr -> . ITE LPAREN expr COMMA expr COMMA expr RPAREN
+    (16) expr -> . EXISTS names COLON expr
+    (17) expr -> . FORALL names COLON expr
+    (18) expr -> . RENAME subs COLON expr
+    (25) expr -> . LPAREN expr RPAREN
+    (24) name -> . NAME
+
+    TRUE            shift and go to state 2
+    FALSE           shift and go to state 3
+    AT              shift and go to state 4
+    NOT             shift and go to state 6
+    ITE             shift and go to state 7
+    EXISTS          shift and go to state 9
+    FORALL          shift and go to state 10
+    RENAME          shift and go to state 11
+    LPAREN          shift and go to state 8
+    NAME            shift and go to state 12
+
+    expr                           shift and go to state 52
+    name                           shift and go to state 5
+
+state 46
+
+    (19) subs -> subs COMMA . sub
+    (21) sub -> . name DIV name
+    (24) name -> . NAME
+
+    NAME            shift and go to state 12
+
+    sub                            shift and go to state 53
+    name                           shift and go to state 31
+
+state 47
+
+    (21) sub -> name DIV . name
+    (24) name -> . NAME
+
+    NAME            shift and go to state 12
+
+    name                           shift and go to state 54
+
+state 48
+
+    (15) expr -> ITE LPAREN expr COMMA . expr COMMA expr RPAREN
+    (1) expr -> . TRUE
+    (2) expr -> . FALSE
+    (3) expr -> . AT number
+    (6) expr -> . name
+    (7) expr -> . NOT expr
+    (8) expr -> . expr AND expr
+    (9) expr -> . expr OR expr
+    (10) expr -> . expr XOR expr
+    (11) expr -> . expr IMPLIES expr
+    (12) expr -> . expr EQUIV expr
+    (13) expr -> . expr EQUALS expr
+    (14) expr -> . expr MINUS expr
+    (15) expr -> . ITE LPAREN expr COMMA expr COMMA expr RPAREN
+    (16) expr -> . EXISTS names COLON expr
+    (17) expr -> . FORALL names COLON expr
+    (18) expr -> . RENAME subs COLON expr
+    (25) expr -> . LPAREN expr RPAREN
+    (24) name -> . NAME
+
+    TRUE            shift and go to state 2
+    FALSE           shift and go to state 3
+    AT              shift and go to state 4
+    NOT             shift and go to state 6
+    ITE             shift and go to state 7
+    EXISTS          shift and go to state 9
+    FORALL          shift and go to state 10
+    RENAME          shift and go to state 11
+    LPAREN          shift and go to state 8
+    NAME            shift and go to state 12
+
+    expr                           shift and go to state 55
+    name                           shift and go to state 5
+
+state 49
+
+    (16) expr -> EXISTS names COLON expr .
+    (8) expr -> expr . AND expr
+    (9) expr -> expr . OR expr
+    (10) expr -> expr . XOR expr
+    (11) expr -> expr . IMPLIES expr
+    (12) expr -> expr . EQUIV expr
+    (13) expr -> expr . EQUALS expr
+    (14) expr -> expr . MINUS expr
+
+    $end            reduce using rule 16 (expr -> EXISTS names COLON expr .)
+    RPAREN          reduce using rule 16 (expr -> EXISTS names COLON expr .)
+    COMMA           reduce using rule 16 (expr -> EXISTS names COLON expr .)
+    AND             shift and go to state 13
+    OR              shift and go to state 14
+    XOR             shift and go to state 15
+    IMPLIES         shift and go to state 16
+    EQUIV           shift and go to state 17
+    EQUALS          shift and go to state 18
+    MINUS           shift and go to state 19
+
+  ! AND             [ reduce using rule 16 (expr -> EXISTS names COLON expr .) ]
+  ! OR              [ reduce using rule 16 (expr -> EXISTS names COLON expr .) ]
+  ! XOR             [ reduce using rule 16 (expr -> EXISTS names COLON expr .) ]
+  ! IMPLIES         [ reduce using rule 16 (expr -> EXISTS names COLON expr .) ]
+  ! EQUIV           [ reduce using rule 16 (expr -> EXISTS names COLON expr .) ]
+  ! EQUALS          [ reduce using rule 16 (expr -> EXISTS names COLON expr .) ]
+  ! MINUS           [ reduce using rule 16 (expr -> EXISTS names COLON expr .) ]
+
+
+state 50
+
+    (22) names -> names COMMA name .
+
+    COLON           reduce using rule 22 (names -> names COMMA name .)
+    COMMA           reduce using rule 22 (names -> names COMMA name .)
+
+
+state 51
+
+    (17) expr -> FORALL names COLON expr .
+    (8) expr -> expr . AND expr
+    (9) expr -> expr . OR expr
+    (10) expr -> expr . XOR expr
+    (11) expr -> expr . IMPLIES expr
+    (12) expr -> expr . EQUIV expr
+    (13) expr -> expr . EQUALS expr
+    (14) expr -> expr . MINUS expr
+
+    $end            reduce using rule 17 (expr -> FORALL names COLON expr .)
+    RPAREN          reduce using rule 17 (expr -> FORALL names COLON expr .)
+    COMMA           reduce using rule 17 (expr -> FORALL names COLON expr .)
+    AND             shift and go to state 13
+    OR              shift and go to state 14
+    XOR             shift and go to state 15
+    IMPLIES         shift and go to state 16
+    EQUIV           shift and go to state 17
+    EQUALS          shift and go to state 18
+    MINUS           shift and go to state 19
+
+  ! AND             [ reduce using rule 17 (expr -> FORALL names COLON expr .) ]
+  ! OR              [ reduce using rule 17 (expr -> FORALL names COLON expr .) ]
+  ! XOR             [ reduce using rule 17 (expr -> FORALL names COLON expr .) ]
+  ! IMPLIES         [ reduce using rule 17 (expr -> FORALL names COLON expr .) ]
+  ! EQUIV           [ reduce using rule 17 (expr -> FORALL names COLON expr .) ]
+  ! EQUALS          [ reduce using rule 17 (expr -> FORALL names COLON expr .) ]
+  ! MINUS           [ reduce using rule 17 (expr -> FORALL names COLON expr .) ]
+
+
+state 52
+
+    (18) expr -> RENAME subs COLON expr .
+    (8) expr -> expr . AND expr
+    (9) expr -> expr . OR expr
+    (10) expr -> expr . XOR expr
+    (11) expr -> expr . IMPLIES expr
+    (12) expr -> expr . EQUIV expr
+    (13) expr -> expr . EQUALS expr
+    (14) expr -> expr . MINUS expr
+
+    $end            reduce using rule 18 (expr -> RENAME subs COLON expr .)
+    RPAREN          reduce using rule 18 (expr -> RENAME subs COLON expr .)
+    COMMA           reduce using rule 18 (expr -> RENAME subs COLON expr .)
+    AND             shift and go to state 13
+    OR              shift and go to state 14
+    XOR             shift and go to state 15
+    IMPLIES         shift and go to state 16
+    EQUIV           shift and go to state 17
+    EQUALS          shift and go to state 18
+    MINUS           shift and go to state 19
+
+  ! AND             [ reduce using rule 18 (expr -> RENAME subs COLON expr .) ]
+  ! OR              [ reduce using rule 18 (expr -> RENAME subs COLON expr .) ]
+  ! XOR             [ reduce using rule 18 (expr -> RENAME subs COLON expr .) ]
+  ! IMPLIES         [ reduce using rule 18 (expr -> RENAME subs COLON expr .) ]
+  ! EQUIV           [ reduce using rule 18 (expr -> RENAME subs COLON expr .) ]
+  ! EQUALS          [ reduce using rule 18 (expr -> RENAME subs COLON expr .) ]
+  ! MINUS           [ reduce using rule 18 (expr -> RENAME subs COLON expr .) ]
+
+
+state 53
+
+    (19) subs -> subs COMMA sub .
+
+    COLON           reduce using rule 19 (subs -> subs COMMA sub .)
+    COMMA           reduce using rule 19 (subs -> subs COMMA sub .)
+
+
+state 54
+
+    (21) sub -> name DIV name .
+
+    COLON           reduce using rule 21 (sub -> name DIV name .)
+    COMMA           reduce using rule 21 (sub -> name DIV name .)
+
+
+state 55
+
+    (15) expr -> ITE LPAREN expr COMMA expr . COMMA expr RPAREN
+    (8) expr -> expr . AND expr
+    (9) expr -> expr . OR expr
+    (10) expr -> expr . XOR expr
+    (11) expr -> expr . IMPLIES expr
+    (12) expr -> expr . EQUIV expr
+    (13) expr -> expr . EQUALS expr
+    (14) expr -> expr . MINUS expr
+
+    COMMA           shift and go to state 56
+    AND             shift and go to state 13
+    OR              shift and go to state 14
+    XOR             shift and go to state 15
+    IMPLIES         shift and go to state 16
+    EQUIV           shift and go to state 17
+    EQUALS          shift and go to state 18
+    MINUS           shift and go to state 19
+
+
+state 56
+
+    (15) expr -> ITE LPAREN expr COMMA expr COMMA . expr RPAREN
+    (1) expr -> . TRUE
+    (2) expr -> . FALSE
+    (3) expr -> . AT number
+    (6) expr -> . name
+    (7) expr -> . NOT expr
+    (8) expr -> . expr AND expr
+    (9) expr -> . expr OR expr
+    (10) expr -> . expr XOR expr
+    (11) expr -> . expr IMPLIES expr
+    (12) expr -> . expr EQUIV expr
+    (13) expr -> . expr EQUALS expr
+    (14) expr -> . expr MINUS expr
+    (15) expr -> . ITE LPAREN expr COMMA expr COMMA expr RPAREN
+    (16) expr -> . EXISTS names COLON expr
+    (17) expr -> . FORALL names COLON expr
+    (18) expr -> . RENAME subs COLON expr
+    (25) expr -> . LPAREN expr RPAREN
+    (24) name -> . NAME
+
+    TRUE            shift and go to state 2
+    FALSE           shift and go to state 3
+    AT              shift and go to state 4
+    NOT             shift and go to state 6
+    ITE             shift and go to state 7
+    EXISTS          shift and go to state 9
+    FORALL          shift and go to state 10
+    RENAME          shift and go to state 11
+    LPAREN          shift and go to state 8
+    NAME            shift and go to state 12
+
+    expr                           shift and go to state 57
+    name                           shift and go to state 5
+
+state 57
+
+    (15) expr -> ITE LPAREN expr COMMA expr COMMA expr . RPAREN
+    (8) expr -> expr . AND expr
+    (9) expr -> expr . OR expr
+    (10) expr -> expr . XOR expr
+    (11) expr -> expr . IMPLIES expr
+    (12) expr -> expr . EQUIV expr
+    (13) expr -> expr . EQUALS expr
+    (14) expr -> expr . MINUS expr
+
+    RPAREN          shift and go to state 58
+    AND             shift and go to state 13
+    OR              shift and go to state 14
+    XOR             shift and go to state 15
+    IMPLIES         shift and go to state 16
+    EQUIV           shift and go to state 17
+    EQUALS          shift and go to state 18
+    MINUS           shift and go to state 19
+
+
+state 58
+
+    (15) expr -> ITE LPAREN expr COMMA expr COMMA expr RPAREN .
+
+    AND             reduce using rule 15 (expr -> ITE LPAREN expr COMMA expr COMMA expr RPAREN .)
+    OR              reduce using rule 15 (expr -> ITE LPAREN expr COMMA expr COMMA expr RPAREN .)
+    XOR             reduce using rule 15 (expr -> ITE LPAREN expr COMMA expr COMMA expr RPAREN .)
+    IMPLIES         reduce using rule 15 (expr -> ITE LPAREN expr COMMA expr COMMA expr RPAREN .)
+    EQUIV           reduce using rule 15 (expr -> ITE LPAREN expr COMMA expr COMMA expr RPAREN .)
+    EQUALS          reduce using rule 15 (expr -> ITE LPAREN expr COMMA expr COMMA expr RPAREN .)
+    MINUS           reduce using rule 15 (expr -> ITE LPAREN expr COMMA expr COMMA expr RPAREN .)
+    $end            reduce using rule 15 (expr -> ITE LPAREN expr COMMA expr COMMA expr RPAREN .)
+    RPAREN          reduce using rule 15 (expr -> ITE LPAREN expr COMMA expr COMMA expr RPAREN .)
+    COMMA           reduce using rule 15 (expr -> ITE LPAREN expr COMMA expr COMMA expr RPAREN .)
+
