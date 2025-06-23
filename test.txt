@@ -28,9 +28,41 @@ c
 0 0 0 0
 
 TESTS
-[a*]p
-[a*]p
-[a*]p
-[a*]p
-[a*]p
-[a*]p
+p
+!p
+p & q
+p | q
+p -> q
+p <-> q
+(p -> q) & (!q)
+[p]p
+[a]p
+<b>q
+<a>(p -> q)
+[a](p & q)
+<a>(p <-> [b]q)
+<p?q>
+[!p?]q
+[ (a ; b) ]p
+[ (a U b) ](p -> q)
+< (a ; b ; c) > (p & !q)
+[ (a ; (b U c))* ]p
+< (a ; !q? ; b) > q
+< (a* ; b ; p?) > q
+[a](p -> <b>(q <-> p))
+[ (a ; b* ; c) ] (p & [c]q)
+< (a U b) > (p | (q & !p))
+[a](!q -> <b>(p U c))
+< (a ; (p? ; b)* ; c) > (q <-> [a]p)
+[a](p & q) -> [b](q -> p)
+<p? ; a> (p -> [b](q | p))
+[ (a ; b ; (p? ; c))* ] (p <-> q)
+< (a ; (q? ; b)* ; c) > (!p | q)
+[ ((a U b)* ; c) ] (p -> <a>q)
+[a](p -> [b](q <-> [c]p))
+[ a* ] (p & q)
+< (a ; b ; c) > (p -> q)
+[ (p? ; a ; q?) ] q
+< ((a U b)* ; c ; (p?))* > q
+<a>!(p & q)
+[a](p | (q -> <b>p))

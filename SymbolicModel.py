@@ -2,23 +2,21 @@ import numpy as np
 import dd.cudd as cudd
 from time import time
 from typing import Optional, Union
-from TextToModel import SymbolicModelFromFile
+from SymbolicInputToModel import SymbolicModelFromSymbolic
 import random
 
 BDD = cudd.BDD
 
 class SymbolicModel:
-    def __init__(self, num_states: int, valuations: list[list[int]], proposition_names: list[str],
-                                        programs: list[np.ndarray], program_names: list[str],
-                                        tests: Optional[list[str]]=None):
+    def __init__(self, bdd, variables: list[str], law: cudd.BDD, programs: dict[str, cudd.BDD]):
         """Creates a symbolically represented kripke model.
 
         Contains
         - a symbolic law, which is a boolean expression containing all valid states (to save
-          memory, the individual states are not stored after construction)
+        memory, the individual states are not stored after construction)
         - a list of symbolically represented programs with their names
         - a transformer, which can parse PDL strings to trees and transform those trees to an
-          evaluation, based on the current model
+        evaluation, based on the current model
 
         Args:
             num_states (int): Number of states in the model
@@ -29,50 +27,86 @@ class SymbolicModel:
             programs (list[np.ndarray]): List of programs in explicit matrix notation. 
             program_names (list[str]): List of program names as matched to the programs list.
         """        
-        
-        self._num_states = num_states
-        self._current_prop_number = 0
 
-        self.bdd = cudd.BDD()
+        self.bdd = bdd
+        self.variables = variables
 
-        # generate empty BDDs for states
-        self.states = [self.bdd.true for _ in range(self._num_states)]
-        self.programs = {}
-        self.tests = tests
+        self.law = law
 
-        for valuation, proposistion_name in zip(valuations, proposition_names):
-            self._add_valuation(valuation, proposistion_name)
+        self.programs = programs
 
-        self._make_states_unique()
-
-        self.law = self._construct_law_expression()
-        
-        for program, name in zip(programs, program_names):
-            self._add_program(program, name)
-
+        for program_name, program in self.programs.items():
+            self.programs[program_name] = cudd.restrict(program, self.law)
 
         from Parser import PDLTransformer 
         self.transformer = PDLTransformer(self)
 
     @classmethod
     def from_file(cls, file_name: str) -> "SymbolicModel":
-        num_states, valuations, valuation_names, programs, program_names, tests = SymbolicModelFromFile(file_name)
-        return cls(num_states, valuations, valuation_names, programs, program_names, tests) 
+        bdd, variables, law, programs = SymbolicModelFromSymbolic(file_name)
+        return cls(bdd, variables, law, programs) 
     
     @classmethod
-    def random(cls, num_states:int, num_valuations: int, num_programs: int) -> "SymbolicModel":
-        valuations = []
-        for i in range(num_valuations):
-            valuations.append(random.choices([0,1], k=num_states))
+    def random(cls, num_states:int, num_variables: int, num_programs: int, num_transitions: Optional[int] =None) -> "SymbolicModel":
+        bdd = cudd.BDD()
 
-        programs = []
-        for i in range(num_programs):
-            programs.append(np.random.choice([0,1], size=[num_states, num_states]))
+        def random_expr(bdd, variables: list[str]):
+            if len(variables) == 1:
+                return bdd.add_expr(variables[0]) if random.choice([True, False]) else ~bdd.add_expr(variables[0])
+            
+            
+            split_index = random.randint(1, len(variables) - 1)
+            left_vars = variables[:split_index]
+            right_vars = variables[split_index:]
+            
+            operator = random.choice(['&', '|'])
+            left = random_expr(bdd, left_vars)
+            right = random_expr(bdd, right_vars)
 
-        proposition_names = [f'p{i}' for i in range(num_valuations)]
-        program_names = [f'a{i}' for i in range(num_programs)]
+            return bdd.apply(operator, left, right)
+        
+        def random_valid_expr(bdd, variables, law):
+            expression = random_expr(bdd, variables)
+            while (~expression & law) == bdd.true:
+                expression = random_expr(bdd, variables)
+            return expression
+        
+        variables = ['x'+str(i) for i in range(num_variables)]
+        targets = ['x'+str(i)+"'" for i in range(num_variables)]
 
-        return cls(num_states, valuations, proposition_names, programs, program_names)
+        for variable in variables:
+            bdd.declare(variable)
+
+        for target in targets:
+            bdd.declare(target)
+
+        law = random_expr(bdd, variables)
+        primed_name_map = dict(zip(variables, targets))
+        law_primed = bdd.let(primed_name_map, law)
+        
+
+        if num_transitions == None:
+            num_transitions = random.choice(range(1, num_variables))
+
+
+        programs_set = set()
+        final_programs = {}
+        i = 0
+        while len(programs_set) < num_programs:
+            transitions = set()
+            while len(transitions) < num_transitions:
+                base_state = random_valid_expr(bdd, variables, law)
+                target_state = random_valid_expr(bdd, targets, law_primed)
+                transitions.add(bdd.apply('&', base_state, target_state))
+            program = bdd.false
+            for transition in transitions:
+                program |= transition
+            if program.node not in programs_set:
+                programs_set.add(program)
+                final_programs[f'prog{i}'] = program
+                i += 1
+
+        return cls(bdd, variables, law, final_programs)
 
     def __enter__(self):
         return self
@@ -126,154 +160,6 @@ class SymbolicModel:
         return self.bdd.let(remapping, expression)
         
 
-    def _create_new_prop(self, name: Optional[str]= None) -> BDD:
-        """Creates a new proposition variable in the model.
-
-        Uses the provided name, if no name is provided the name format x# is used. For instance x2
-        is used for the third unnamed proposition.
-
-        Args:
-            name (Optional[str]): Name for the proposition, if left out format "x#" is used.
-
-        Returns:
-            BDD: The new proposition as a variable
-
-        """        
-        if name:
-            current_prop_name = name
-        else:
-            current_prop_name = f'x{self._current_prop_number}'
-            self._current_prop_number += 1
-
-        self.bdd.declare(current_prop_name)
-        return self.bdd.var(current_prop_name)
-
-    def _get_even_occurrence_indices(self) -> set[int]:
-        """Finds every even-numbered occurrence of a state in the model.
-
-        For example if a state appears five times in the model, the indices of the second and 
-        fourth occurrence are returned
-
-        Returns:
-            set[int]: Set of the indices of every second occurrence of a state in the model
-
-        """        
-        seen_once = set()
-        indices = set()
-
-        for index, state in enumerate(self.states):
-            if state in seen_once:
-                indices.add(index)
-                seen_once.remove(state)
-            else:
-                seen_once.add(state)
-        
-        return indices
-    
-    def _make_states_unique(self) -> None:
-        """Makes all the states in the model unique by continuously adding new variables that are 
-        made true for every second occurrence of a state and false for all other states. This is 
-        done until there are no duplicate states left in the model. Uses _get_even_occurrence_indices()
-        to find all even-numbered occurrences of a state.
-        """        
-        duplicate_indices = self._get_even_occurrence_indices()
-
-        self.only_native_propositions = False
-        if duplicate_indices == []:
-            self.only_native_propositions = True
-
-        while duplicate_indices:
-            new_prop = self._create_new_prop()
-            
-            for index, state in enumerate(self.states):
-                if index in duplicate_indices:
-                    self.states[index] &= new_prop
-                else:
-                    self.states[index] &= ~new_prop
-      
-            duplicate_indices = self._get_even_occurrence_indices()
-
-    def _add_valuation(self, valuations: list[int], proposition_name: str = None) -> None:
-        """Adds a new proposition to all states based on the provided valuations.
-
-        Each state in the model is updated with a new proposition that is set to True
-        or False according to the corresponding value in `valuations`, where 1 means True
-        and 0 means False. The order of valuations must match the order of states.
-
-        Args:
-            valuations (list[int]): List with 0s and 1s representing the valuations of the states.
-            Must be as long as the number of states in the model. 
-            proposition_name (str, optional): An optional name for the proposition. If no name is
-            provided the proposition will be named according to the 'x#' format. Defaults to None.
-
-        Raises:
-            ValueError: If the number of valuations doesn't match up with the number of states 
-            in the model
-        """       
-        if len(valuations) != self._num_states:
-            raise ValueError('Different number of valuations than states')
-        
-        new_prop = self._create_new_prop(proposition_name)
-        for i, valuation in enumerate(valuations):
-            if valuation == 1:
-                self.states[i] &= new_prop
-            else:
-                self.states[i] &= ~new_prop
-
-
-    def _construct_law_expression(self) -> BDD:
-        """Constructs a law expression which is a Boolean expression representing all possible 
-        states in the model
-
-        Returns:
-            BDD: A Boolean expression representing the union of all states.
-        """        
-        result = self.bdd.false
-        for state in self.states:
-            result = result | state
-        return result
-        
-    def _add_program(self, program: np.ndarray, program_name: str) -> None:
-        """ Adds the explicit program as a symbolic program to the model.
-
-        The explicit program is represented by a matrix of 0s and 1s, where the ones indicate a 
-        transition from the state with the x index to the state with the y index.
-        
-        A symbolic program is a boolean expression which is the disjunction of all transitions 
-        in the program. A transition is a conjunction of the valuations of the base state and the 
-        primed valuations of the target state.
-
-        Args:
-            program (np.ndarray): The program as represented in a matrix of 0s and 1s. Size of the 
-            matrix must match the number of states in the model
-            program_name (str): The name of the program. The name must be unique.
-
-        Raises:
-            ValueError: Program contains a different number of states than the model.
-            ValueError: The provided program name is not unique
-        """              
-        if program.shape != (self._num_states, self._num_states):
-            raise ValueError("Number of states in the program and in the model don't match")
-        
-        if program_name in self.programs:
-            raise ValueError(f"The program name '{program_name}' is used at least twice, while program names should be unique")
-
-        # find the source and target state couples as indices
-        base_state_indices, target_state_indices = np.where(program == 1)
-        
-        program_bdd = self.bdd.false
-        
-        for base_state_index, target_state_index in zip(base_state_indices, target_state_indices):
-            base_state = self.states[base_state_index]
-            target_state_primed = self._add_primes(self.states[target_state_index])
-
-            transition = base_state & target_state_primed
-            program_bdd = program_bdd | transition
-
-        program_bdd = cudd.restrict(program_bdd, self.law)
-
-        self.programs[program_name] = program_bdd
-
     def check(self, PDL_expression: str, state_valuation: Optional[str]=None, print_bdd_filename: Optional[str]=None) -> Union[bool, tuple[list[int], str]]:
         """Evaluates a PDL expression within the Kripke model. If a state is provided gives the 
         evaluation of the PDL expression for that state.
@@ -296,7 +182,6 @@ class SymbolicModel:
         
         states_where_true = self.transformer.evaluate_expression(PDL_expression)
 
-
         if state_valuation:
             state_valuation_bdd = self.bdd.add_expr(state_valuation)
             if state_valuation_bdd.implies(self.law) == self.bdd.true:
@@ -306,17 +191,19 @@ class SymbolicModel:
         
         elif print_bdd_filename:
             self.bdd.dump(print_bdd_filename, roots=[states_where_true])
-            
-        else:
-            result = []
-            for state in self.states:
-                if state.implies(states_where_true) == self.bdd.true:
-                    result.append(1)
-                else:
-                    result.append(0)
-            return result
         
         
     def file_tests(self) -> None:
         return self.tests
-        
+    
+    def program_names_listed(self) -> str:
+        full_result = ', '.join(self.programs.keys())
+        if len(full_result) > 40:
+            return full_result[:40] + '...'
+        return full_result
+
+    def prop_names_listed(self) -> str:
+        full_result = ', '.join(self.variables)
+        if len(full_result) > 40:
+            return full_result[:40] + '...'
+        return full_result

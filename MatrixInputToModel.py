@@ -1,6 +1,6 @@
 import numpy as np
 
-def SymbolicModelFromFile(file: str) -> tuple[int, list, list, list, list, list]:
+def SymbolicModelFromMatrix(file: str) -> tuple[int, list, list, list, list, list]:
     components = ['STATES', 'PROPS', 'PROGS', 'TESTS']
     mode = None
     num_states = 0

@@ -1,5 +1,5 @@
 from time import time
-from SymbolicModel import SymbolicModel
+from ExplicitSymbolicModel import SymbolicModel
 import matplotlib.pyplot as plt
 import numpy as np
 

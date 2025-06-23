@@ -1,13 +1,13 @@
 from lark import Transformer, Lark
 import dd.cudd as _bdd
-from SymbolicModel import SymbolicModel, BDD
+from ExplicitSymbolicModel import BDD
 from typing import Union
 
 FormulaItems = list[Union[str, BDD]]
 
 
 class PDLTransformer(Transformer):
-    def __init__(self, model: SymbolicModel):
+    def __init__(self, model):
         self.model = model
         self.identity = self.find_identity()
         self.parser = Lark(self.grammar,
@@ -54,7 +54,7 @@ class PDLTransformer(Transformer):
             ?iteration: program_atom
                         | program_atom ITERATION                                -> star
 
-            ?test: TEST formula                                                 -> test
+            ?test: formula TEST   -> test
 
             ?program_atom: SYMBOL                                               -> program_symbol
                         | test
@@ -78,10 +78,6 @@ class PDLTransformer(Transformer):
 
             SYMBOL: /[a-zA-Z_][a-zA-Z0-9_]*/
             """
-
-    # def formula(self, items: FormulaItems) -> BDD:
-    #     name = str(items[0])
-    #     return self.model.bdd.var(name)
     
     def formula_symbol(self, items: FormulaItems) -> BDD:
         """Returns the formula variable from the model given in the items list
@@ -135,7 +131,7 @@ class PDLTransformer(Transformer):
         return ~items[1]
     
     def test(self, items: FormulaItems) -> BDD:
-        return self.identity & items[1]
+        return self.identity & items[0]
 
     def and_(self, items: FormulaItems) -> BDD:
         """Returns the conjunction of the two variables given by the AST tree
@@ -241,3 +237,5 @@ class PDLTransformer(Transformer):
             p_prime = self.model._add_primes(p)
             identity &= ~self.model.bdd.apply('xor', p, p_prime)
         return identity
+    
+    
