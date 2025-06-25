@@ -1,6 +1,5 @@
 import numpy as np
 import dd.cudd as cudd
-from time import time
 from typing import Optional, Union
 from SymbolicInputToModel import SymbolicModelFromSymbolic
 import random

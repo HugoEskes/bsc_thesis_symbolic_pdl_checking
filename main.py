@@ -2,6 +2,7 @@ from ExplicitSymbolicModel import ExplicitSymbolicModel
 from SymbolicModel import SymbolicModel
 import argparse
 from time import time
+import os
 
 def generate_model(args):
     if args.file:
@@ -62,18 +63,25 @@ def safe_file_name(name: str) -> str:
     
     for old_char, new_char in character_mapping.items():
         name = name.replace(old_char, new_char)
+
+    if len(name) > 50:
+        return name[:50]
     return name
 
 def output_bdd_file_name(test: str, args: argparse.Namespace) -> str:
-    file_name = ''
-    if args.random:
-        file_name += 'random'
-    elif args.file:
-        file_name += args.file.replace('.txt', '')
-    file_name += '_'
-    file_name += safe_file_name(test)
-    file_name += '.png'
-    return file_name
+    os.makedirs('results', exist_ok=True) 
+    file_name = os.path.join('.', 'results')
+    file_name = './results'
+    if args.file:
+        base_name = args.file.replace('.txt', '')
+    elif args.random:
+        base_name = 'random'
+    else:
+        base_name = ''
+
+    file_name = f"{base_name}_{safe_file_name(test)}.png"
+    full_path = os.path.join('results', file_name)
+    return full_path
 
 def output_to_file(test, model, args):
     file_name = output_bdd_file_name(test, args)

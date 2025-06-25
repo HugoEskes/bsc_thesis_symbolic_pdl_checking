@@ -1,8 +1,9 @@
 from lark import Transformer, Lark
 import dd.cudd as _bdd
-from ExplicitSymbolicModel import BDD
+
 from typing import Union
 
+BDD = _bdd.BDD
 FormulaItems = list[Union[str, BDD]]
 
 

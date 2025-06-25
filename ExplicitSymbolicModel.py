@@ -36,20 +36,20 @@ class ExplicitSymbolicModel:
         self.bdd = cudd.BDD()
 
         # generate empty BDDs for states
-        self.states = [self.bdd.true for _ in range(self._num_states)]
         self.programs = {}
         self.tests = tests
 
-        for valuation, proposistion_name in zip(valuations, proposition_names):
-            self._add_valuation(valuation, proposistion_name)
+        self.states = []
+        self.valuate_states(valuations)
 
-        self._make_states_unique()
+        # self._make_states_unique()
 
         self.law = self._construct_law_expression()
         
         for program, name in zip(programs, program_names):
             self._add_program(program, name)
 
+        
 
         from Parser import PDLTransformer 
         self.transformer = PDLTransformer(self)
@@ -200,32 +200,15 @@ class ExplicitSymbolicModel:
       
             duplicate_indices = self._get_even_occurrence_indices()
 
-    def _add_valuation(self, valuations: list[int], proposition_name: str = None) -> None:
-        """Adds a new proposition to all states based on the provided valuations.
+    def valuate_states(self, valuations):
+        valuation_cube = np.array(valuations)
+        states_cube = valuation_cube.T
+        for name in self.prop_names:
+            self.bdd.declare(name)
 
-        Each state in the model is updated with a new proposition that is set to True
-        or False according to the corresponding value in `valuations`, where 1 means True
-        and 0 means False. The order of valuations must match the order of states.
-
-        Args:
-            valuations (list[int]): List with 0s and 1s representing the valuations of the states.
-            Must be as long as the number of states in the model. 
-            proposition_name (str, optional): An optional name for the proposition. If no name is
-            provided the proposition will be named according to the 'x#' format. Defaults to None.
-
-        Raises:
-            ValueError: If the number of valuations doesn't match up with the number of states 
-            in the model
-        """       
-        if len(valuations) != self._num_states:
-            raise ValueError('Different number of valuations than states')
-        
-        new_prop = self._create_new_prop(proposition_name)
-        for i, valuation in enumerate(valuations):
-            if valuation == 1:
-                self.states[i] &= new_prop
-            else:
-                self.states[i] &= ~new_prop
+        for i in range(self._num_states):
+            result = {s: bool(v) for s, v in zip(self.prop_names, states_cube[i])}
+            self.states.append(self.bdd.cube(result))
 
 
     def _construct_law_expression(self) -> BDD:
@@ -266,7 +249,7 @@ class ExplicitSymbolicModel:
             raise ValueError(f"The program name '{program_name}' is used at least twice, while program names should be unique")
 
         # find the source and target state couples as indices
-        base_state_indices, target_state_indices = np.where(program == 1)
+        base_state_indices, target_state_indices = np.nonzero(program)
         
         program_bdd = self.bdd.false
         
