@@ -7,7 +7,7 @@ import random
 BDD = cudd.BDD
 
 class SymbolicModel:
-    def __init__(self, bdd, variables: list[str], law: cudd.BDD, programs: dict[str, cudd.BDD]):
+    def __init__(self, bdd, variables: list[str], law: cudd.BDD, programs: dict[str, cudd.BDD], tests: list[str]):
         """Creates a symbolically represented kripke model.
 
         Contains
@@ -31,6 +31,7 @@ class SymbolicModel:
         self.variables = variables
 
         self.law = law
+        self.tests = tests
 
         self.programs = programs
 
@@ -42,70 +43,8 @@ class SymbolicModel:
 
     @classmethod
     def from_file(cls, file_name: str) -> "SymbolicModel":
-        bdd, variables, law, programs = SymbolicModelFromSymbolic(file_name)
-        return cls(bdd, variables, law, programs) 
-    
-    @classmethod
-    def random(cls, num_states:int, num_variables: int, num_programs: int, num_transitions: Optional[int] =None) -> "SymbolicModel":
-        bdd = cudd.BDD()
-
-        def random_expr(bdd, variables: list[str]):
-            if len(variables) == 1:
-                return bdd.add_expr(variables[0]) if random.choice([True, False]) else ~bdd.add_expr(variables[0])
-            
-            
-            split_index = random.randint(1, len(variables) - 1)
-            left_vars = variables[:split_index]
-            right_vars = variables[split_index:]
-            
-            operator = random.choice(['&', '|'])
-            left = random_expr(bdd, left_vars)
-            right = random_expr(bdd, right_vars)
-
-            return bdd.apply(operator, left, right)
-        
-        def random_valid_expr(bdd, variables, law):
-            expression = random_expr(bdd, variables)
-            while (~expression & law) == bdd.true:
-                expression = random_expr(bdd, variables)
-            return expression
-        
-        variables = ['x'+str(i) for i in range(num_variables)]
-        targets = ['x'+str(i)+"'" for i in range(num_variables)]
-
-        for variable in variables:
-            bdd.declare(variable)
-
-        for target in targets:
-            bdd.declare(target)
-
-        law = random_expr(bdd, variables)
-        primed_name_map = dict(zip(variables, targets))
-        law_primed = bdd.let(primed_name_map, law)
-        
-
-        if num_transitions == None:
-            num_transitions = random.choice(range(1, num_variables))
-
-
-        programs_set = set()
-        final_programs = {}
-        i = 0
-        while len(programs_set) < num_programs:
-            transitions = set()
-            while len(transitions) < num_transitions:
-                base_state = random_valid_expr(bdd, variables, law)
-                target_state = random_valid_expr(bdd, targets, law_primed)
-                transitions.add(bdd.apply('&', base_state, target_state))
-            program = bdd.false
-            for transition in transitions:
-                program |= transition
-            if program.node not in programs_set:
-                programs_set.add(program)
-                final_programs[f'prog{i}'] = program
-                i += 1
-
-        return cls(bdd, variables, law, final_programs)
+        bdd, variables, law, programs, tests = SymbolicModelFromSymbolic(file_name)
+        return cls(bdd, variables, law, programs, tests) 
 
     def __enter__(self):
         return self

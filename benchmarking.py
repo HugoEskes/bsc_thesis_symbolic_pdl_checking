@@ -15,9 +15,9 @@ def encode_state(bdd, var_names, index) -> cudd.BDD:
         cube &= bdd.var(var) if bit == '1' else ~bdd.var(var)
     return cube
 
-def create_symbolic_model(num_states: int) -> tuple[cudd.BDD, list[str], cudd.BDD, dict[str, cudd.BDD]]:
+def create_symbolic_model(num_states: int, reorder: bool = False) -> tuple[cudd.BDD, list[str], cudd.BDD, dict[str, cudd.BDD]]:
     bdd = cudd.BDD()
-    bdd.configure(reordering=True)
+    bdd.configure(reordering=reorder)
 
     if num_states < 3:
         raise ValueError('Model needs at least three states')
@@ -86,61 +86,67 @@ def create_explicit_model(num_states: int) -> tuple[int, list[list[int]], list[s
 
 results = []
 
-for i in [10, 100, 250, 500, 768, 1000, 1250, 1500, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]:
-    for j in range(5):
-        bdd, prop_names, law, programs = create_symbolic_model(i)
+values = np.logspace(np.log10(10), np.log10(500), 30).astype(int).tolist()
+
+
+for i in values[:20]:
+    bdd, prop_names, law, programs = create_symbolic_model(i)
+    model = SymbolicModel(bdd, prop_names, law, programs)
+    model.check('<a*>p')
+
+for i in values:
+    for j in range(3):
         
         start_cpu = time.process_time_ns()
+        bdd, prop_names, law, programs = create_symbolic_model(i, False)
         model = SymbolicModel(bdd, prop_names, law, programs)
-        symbolic_creation = time.process_time_ns() - start_cpu 
-        start_cpu = time.process_time_ns()
         model.check('<a*>p')
-        symbolic_check = time.process_time_ns() - start_cpu
+        time_taken = time.process_time_ns() - start_cpu 
+        print(f'num_states: {i}\nrun: {j},\nmethod: without_reordering, \nrun_time: {time_taken / 1e9}')
+
+        results.append({'num_states': i, 'run': j, 'method': 'without_reordering', 'run_time': time_taken/1e9})
 
 
 
-        num_states, valuations, proposition_names, programs, program_names = create_explicit_model(i)
-
+        
         start_cpu = time.process_time_ns()
-        model = ExplicitSymbolicModel(num_states, valuations, proposition_names, programs, program_names)
-        explicit_creation = time.process_time_ns() - start_cpu
-        start_cpu = time.process_time_ns()
+        bdd, prop_names, law, programs = create_symbolic_model(i, True)
+        model = SymbolicModel(bdd, prop_names, law, programs)
         model.check('<a*>p')
-        explicit_check = time.process_time_ns() - start_cpu
+        time_taken = time.process_time_ns() - start_cpu 
+        print(f'num_states: {i}\nrun: {j},\nmethod: with_reordering, \nrun_time: {time_taken / 1e9}')
 
-        print(f'num_states: {i}\nrun: {j},\nsymbolic_creation: {symbolic_creation},\nsymbolic_check: {symbolic_check}, \nexplicit_creation: {explicit_creation},\nexplicit_check: {explicit_check}')
-        results.append({'num_states': i, 'run': j, 'symbolic_creation': symbolic_creation, 'symbolic_check': symbolic_check, 'explicit_creation': explicit_creation, 'explicit_check': explicit_check})
+        results.append({'num_states': i, 'run': j, 'method': 'with_reordering', 'run_time': time_taken/1e9})
 
 current_time_str = datetime.now()
-current_time_str = current_time_str.strftime("%H:%M")
+current_time_str = current_time_str.strftime("%H%M")
 df = pd.DataFrame(results)
 
 # Save to disk
 df.to_csv(f'results_{current_time_str}.csv', index=False)
 
+# # num_states = []
+# # time_taken = []
+# # for j in range(50):
+# #     individ_time_taken = []
+# #     for i in range(30):
+# #         t0 = time()
+# #         model = SymbolicModel.random(i+1, i+1, i+1)
+# #         t1 = time()
+# #         individ_time_taken.append(t1-t0)
+# #     time_taken.append(individ_time_taken)
 
-# num_states = []
-# time_taken = []
-# for j in range(50):
-#     individ_time_taken = []
-#     for i in range(30):
-#         t0 = time()
-#         model = SymbolicModel.random(i+1, i+1, i+1)
-#         t1 = time()
-#         individ_time_taken.append(t1-t0)
-#     time_taken.append(individ_time_taken)
+# # time_taken = np.array(time_taken)
+# # averages = np.mean(time_taken, axis=0)
+# # std_devs = np.std(time_taken, axis=0)
 
-# time_taken = np.array(time_taken)
-# averages = np.mean(time_taken, axis=0)
-# std_devs = np.std(time_taken, axis=0)
-
-# num_states = np.arange(1, 30 + 1)
+# # num_states = np.arange(1, 30 + 1)
 
 
-# plt.plot(num_states, averages, label="Dense", color="red")
+# # plt.plot(num_states, averages, label="Dense", color="red")
 
-# plt.xlabel("Number of States")
-# plt.ylabel("CPU Time (in sec.)")
-# plt.legend()
-# plt.grid(True)
-# plt.show()
+# # plt.xlabel("Number of States")
+# # plt.ylabel("CPU Time (in sec.)")
+# # plt.legend()
+# # plt.grid(True)
+# # plt.show()

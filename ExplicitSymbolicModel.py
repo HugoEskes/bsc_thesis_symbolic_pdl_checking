@@ -59,21 +59,6 @@ class ExplicitSymbolicModel:
         num_states, valuations, valuation_names, programs, program_names, tests = SymbolicModelFromMatrix(file_name)
         return cls(num_states, valuations, valuation_names, programs, program_names, tests) 
     
-    @classmethod
-    def random(cls, num_states:int, num_valuations: int, num_programs: int) -> "SymbolicModel":
-        valuations = []
-        for i in range(num_valuations):
-            valuations.append(random.choices([0,1], k=num_states))
-
-        programs = []
-        for i in range(num_programs):
-            programs.append(np.random.choice([0,1], size=[num_states, num_states]))
-
-        proposition_names = [f'p{i}' for i in range(num_valuations)]
-        program_names = [f'a{i}' for i in range(num_programs)]
-
-        return cls(num_states, valuations, proposition_names, programs, program_names)
-
     def __enter__(self):
         return self
     

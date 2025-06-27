@@ -6,14 +6,15 @@ def map_new_variable_names(expression: str, mapping: dict[str, str]) -> str:
         expression = expression.replace(orig_name, new_name)
     return expression
 
-def SymbolicModelFromSymbolic(file: str) -> tuple[cudd.BDD, list[str], cudd.BDD, dict[str, cudd.BDD]]:
-    components = ['PROPS', 'LAW', 'PROGRAMS']
+def SymbolicModelFromSymbolic(file: str) -> tuple[cudd.BDD, list[str], cudd.BDD, dict[str, cudd.BDD], list[str]]:
+    components = ['PROPS', 'LAW', 'PROGRAMS', 'TESTS']
     mode = None
     variables = []
     mapping_variable_names = {}
     programs = {}
     law = None
     bdd = cudd.BDD()
+    tests = []
 
     with open(file, 'r') as f:
         line = f.readline()
@@ -78,7 +79,11 @@ def SymbolicModelFromSymbolic(file: str) -> tuple[cudd.BDD, list[str], cudd.BDD,
                         line = f.readline()
 
                 line = f.readline()
+                
+            elif mode == 'TESTS':
+                tests.append(line.strip())
+                line = f.readline()
             else:
                 line = f.readline()
     
-    return bdd, variables, law, programs
+    return bdd, variables, law, programs, tests

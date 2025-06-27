@@ -89,9 +89,9 @@ def output_to_file(test, model, args):
         t0 = time()
         model.check(test, print_bdd_filename=file_name)
         t1 = time()
-        print(f'Result succesfully exported to {file_name} in {t1-t0:.3e} seconds')
+        print(f'Result from test {test} succesfully exported to {file_name} in {t1-t0:.3e} seconds')
     except:
-        print('Unable to export result to file\n')
+        print(f'Unable to export result from test {test} to file\n')
 
 def output_specific_state(test, model, args):
     try:

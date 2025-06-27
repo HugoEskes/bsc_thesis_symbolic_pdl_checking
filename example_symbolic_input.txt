@@ -1,0 +1,22 @@
+PROPS
+p,q
+
+LAW
+p | q
+
+PROGRAMS
+a
+p&p'&q'
+p&q&p'&q'
+
+b
+p&q&q'
+q&p'
+
+TESTS
+<a>p
+[a]p
+<a;b>q
+<a U b>p
+<a*>p
+<p?>q

@@ -1,0 +1,28 @@
+STATES
+3
+
+PROPS
+p
+1 1 0
+
+q
+0 1 1
+
+PROGS
+a
+0 1 0
+0 1 0
+0 0 0
+
+b
+0 0 0
+0 0 1
+1 0 0
+
+TESTS
+<a>p
+[a]p
+<a ; b>q
+<a U b>p
+<a*>p
+<p?>q
